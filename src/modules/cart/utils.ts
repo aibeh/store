@@ -3,11 +3,23 @@ import type {Cart, CartItem, Checkout} from "./types";
 import {parseCurrency} from "~/currency/utils";
 
 export function getCartItemPrice(item: CartItem): number {
-  const optionsPrice = item.options
-    ? Object.values(item.options).reduce((price, option) => price + option[0]?.price, 0)
-    : 0;
+  let total = item.price;
 
-  return (optionsPrice + item.price) * item.quantity;
+  if (item.options) {
+    Object.values(item.options).forEach((category) => {
+      category.options.forEach((option) => {
+        if (category.condition) {
+          // For stepper options, multiply price by quantity
+          total += (option.price || 0) * (option.quantity || 0);
+        } else {
+          // For radio options, just add the price
+          total += option.price || 0;
+        }
+      });
+    });
+  }
+
+  return total;
 }
 
 export function getCartTotal(cart: Cart): number {
@@ -17,7 +29,8 @@ export function getCartTotal(cart: Cart): number {
 export function getCartItemOptionsSummary(options: CartItem["options"]): string {
   return Object.entries(options!)
     .reduce<string[]>(
-      (_options, [category, option]) => _options.concat(`${category}: ${option[0].title}`),
+      (_options, [category, {options}]) =>
+        _options.concat(`${category}: ${options.map((opt) => opt.title).join(", ")}`),
       [],
     )
     .join(", ");

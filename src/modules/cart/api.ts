@@ -1,4 +1,4 @@
-import type {Field as IField, RadioField, TextField} from "./types";
+import type {Field, RadioField, TextField} from "./types";
 
 import Papa from "papaparse";
 
@@ -10,41 +10,47 @@ interface RawField {
   required: boolean;
 }
 
-function normalize(data: RawField[]): IField[] {
+function normalize(data: RawField[]): Field[] {
   return data.map((field) => {
     switch (field.type) {
-      case "radio":
-        return {
+      case "radio": {
+        const radioField: RadioField = {
           title: field.title,
+          type: "radio",
           options: field.text.split(",").map((option) => option.trim()),
           required: field.required,
           note: field.note || "",
-          type: "radio",
-        } as RadioField;
+        };
 
-      case "text":
-        return {
+        return radioField;
+      }
+
+      case "text": {
+        const textField: TextField = {
           title: field.title,
+          type: "text",
           placeholder: field.text,
           required: field.required,
           note: field.note || "",
-          type: "text",
-        } as TextField;
+        };
+
+        return textField;
+      }
 
       default: {
-        throw new Error("Unknown field type");
+        throw new Error(`Unknown field type`);
       }
     }
-  }, []);
+  });
 }
 
-export default {
+const api = {
   field: {
-    list: async (): Promise<IField[]> => {
+    list: async (): Promise<Field[]> => {
       return fetch(process.env.FIELDS!, {next: {tags: ["fields"]}}).then(async (response) => {
         const csv = await response.text();
 
-        return new Promise<IField[]>((resolve, reject) => {
+        return new Promise<Field[]>((resolve, reject) => {
           Papa.parse(csv, {
             header: true,
             complete: (results) => {
@@ -59,9 +65,11 @@ export default {
     },
   },
   mock: {
-    list: (mock: string): Promise<IField[]> =>
+    list: (mock: string): Promise<Field[]> =>
       import(`./mocks/${mock}.json`).then((result: {default: RawField[]}) =>
         normalize(result.default),
       ),
   },
 };
+
+export default api;

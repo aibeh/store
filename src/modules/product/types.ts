@@ -1,10 +1,14 @@
-export interface Option {
-  id: string;
+export interface OptionCategory {
   title: string;
-  category: string;
-  description: string;
-  image: string;
+  options: Option[];
+  condition?: string; // Format: ">5", "=3", etc.
+}
+
+export interface Option {
+  title: string;
   price: number;
+  category: string;
+  quantity?: number;
 }
 
 export interface Product {
@@ -13,6 +17,12 @@ export interface Product {
   category: string;
   description: string;
   image: string;
-  options?: Record<Option["category"], Option[]>;
+  options?: Record<
+    string,
+    {
+      options: Option[];
+      condition: string;
+    }
+  >;
   price: number;
 }

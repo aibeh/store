@@ -3,71 +3,105 @@ import type {Option as IOption, Product as IProduct} from "./types";
 import Papa from "papaparse";
 import {notFound} from "next/navigation";
 
-interface RawOption extends IOption {
+interface RawOption {
+  id: string;
   type: "option";
+  title: string;
+  category: string;
+  description?: string;
+  image?: string;
+  price: string | number;
 }
 
-interface RawProduct extends IProduct {
+interface RawProduct {
+  id: string;
   type: "product";
+  title: string;
+  category: string;
+  description: string;
+  image: string;
+  price: string | number;
 }
 
-interface RawUnknown extends IProduct {
+interface RawUnknown {
   type: string;
+  id: string;
+  [key: string]: unknown;
 }
 
 class Product implements IProduct {
-  id: IProduct["id"];
-  title: IProduct["title"];
-  category: IProduct["category"];
-  description: IProduct["description"];
-  image: IProduct["image"];
-  options: IProduct["options"];
-  price: IProduct["price"];
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  image: string;
+  options?: Record<
+    string,
+    {
+      options: IOption[];
+      condition: string;
+    }
+  >;
+  price: number;
 
   constructor() {
-    this.options = {} as Product["options"];
+    this.id = "";
+    this.title = "";
+    this.category = "";
+    this.description = "";
+    this.image = "";
+    this.price = 0;
+    this.options = {};
   }
 
   set(product: RawProduct) {
-    Object.assign(this, {
-      id: product.id,
-      title: product.title,
-      category: product.category,
-      description: product.description,
-      image: product.image,
-      price: Number(product.price),
-    });
+    this.id = product.id;
+    this.title = product.title;
+    this.category = product.category;
+    this.description = product.description;
+    this.image = product.image;
+    this.price = Number(product.price);
   }
 
   addOption(option: RawOption) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (!this.options![option.category]) {
-      this.options![option.category] = [];
+    let [category = "", condition = ""] = option.category.split("||");
+
+    category = category.trim();
+    condition = condition.trim();
+
+    if (!this.options) {
+      this.options = {};
     }
 
-    this.options![option.category].push({
-      id: option.id,
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!this.options[category]) {
+      this.options[category] = {
+        options: [],
+        condition,
+      };
+    }
+
+    const newOption: IOption = {
       title: option.title,
-      category: option.category,
-      description: option.description,
-      image: option.image,
       price: Number(option.price),
-    });
+      category,
+    };
+
+    this.options[category].options.push(newOption);
   }
 
   toJSON(): IProduct {
-    const product = {
+    const product: IProduct = {
       id: this.id,
       title: this.title,
       category: this.category,
       description: this.description,
       image: this.image,
-      options: this.options,
-      price: Number(this.price),
+      price: this.price,
     };
 
-    if (Object.keys(product.options!).length === 0) {
-      delete product.options;
+    if (this.options && Object.keys(this.options).length > 0) {
+      product.options = this.options;
     }
 
     return product;
@@ -75,42 +109,33 @@ class Product implements IProduct {
 }
 
 function normalize(data: (RawProduct | RawOption | RawUnknown)[]) {
-  const products = new Map<RawProduct["id"], Product>();
+  const products = new Map<string, Product>();
 
   for (const item of data) {
     switch (item.type) {
-      case "product":
+      case "product": {
         const baseProduct = new Product();
 
         baseProduct.set(item as RawProduct);
-
         products.set(baseProduct.id, baseProduct);
         break;
-
-      case "option":
+      }
+      case "option": {
         const existingProduct = products.get(item.id);
 
         if (existingProduct) {
           existingProduct.addOption(item as RawOption);
         }
         break;
+      }
     }
   }
 
-  const normalized: IProduct[] = Object.values(Object.fromEntries(products)).map((product) =>
-    product.toJSON(),
-  );
-
-  return normalized;
+  return Array.from(products.values()).map((product) => product.toJSON());
 }
 
 const api = {
   list: async (): Promise<IProduct[]> => {
-    // Uncomment to use the mock data
-    // return await import(`./mocks/default.json`).then(
-    //   (module: {default: IProduct[]}) => module.default,
-    // );
-
     return fetch(process.env.PRODUCTS!, {next: {tags: ["products"]}}).then(async (response) => {
       const csv = await response.text();
 
@@ -127,12 +152,7 @@ const api = {
       });
     });
   },
-  fetch: async (id: IProduct["id"]): Promise<IProduct> => {
-    // Uncomment to use the mock data
-    // return await import(`./mocks/default.json`).then(
-    //   (module: {default: IProduct[]}) => module.default.find((product) => product.id === id)!,
-    // );
-
+  fetch: async (id: string): Promise<IProduct> => {
     const products = await api.list();
     const product = products.find((product) => product.id === id);
 

@@ -1,15 +1,31 @@
-import type {Product} from "~/product/types";
+import type {Option} from "~/product/types";
 
-export interface CartItem extends Product {
+export interface CartItem {
+  id: string;
+  title: string;
+  description?: string;
+  image?: string;
+  price: number;
   quantity: number;
+  options?: Record<
+    string,
+    {
+      options: Option[];
+      condition: string;
+    }
+  >;
 }
+
+export type Cart = Map<CartItem["id"], CartItem>;
+
+export type Checkout = Map<string, string>;
 
 export interface RadioField {
   title: string;
   type: "radio";
   options: string[];
   required: boolean;
-  note?: string;
+  note: string;
 }
 
 export interface TextField {
@@ -17,11 +33,7 @@ export interface TextField {
   type: "text";
   placeholder: string;
   required: boolean;
-  note?: string;
+  note: string;
 }
 
 export type Field = RadioField | TextField;
-
-export type Cart = Map<number, CartItem>;
-
-export type Checkout = Map<string, string>;

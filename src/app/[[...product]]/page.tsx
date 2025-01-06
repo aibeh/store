@@ -22,10 +22,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: {product?: string[]};
+  params: Promise<{product?: string[]}>;
 }): Promise<Metadata | undefined> {
-  if (params.product) {
-    const product = await api.fetch(params.product[0]);
+  const {product: productParam} = await params;
+
+  if (productParam) {
+    const product = await api.fetch(productParam[0]);
 
     return {
       title: product.title,
@@ -34,9 +36,10 @@ export async function generateMetadata({
   }
 }
 
-async function HomeAndProductPage({params}: {params: {product?: [product: string]}}) {
+async function HomeAndProductPage({params}: {params: Promise<{product?: [product: string]}>}) {
   const products = await api.list();
-  const selected = params.product ? await api.fetch(params.product[0]) : null;
+  const {product: productParam} = await params;
+  const selected = productParam ? await api.fetch(productParam[0]) : null;
 
   return <StoreScreen products={products} selected={selected} />;
 }
