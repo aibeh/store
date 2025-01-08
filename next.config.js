@@ -10,4 +10,12 @@ module.exports = {
       dynamic: 0,
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+    ],
+  },
 };
