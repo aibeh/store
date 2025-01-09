@@ -34,7 +34,7 @@ function CartDrawer({
   const [{total, message, cart, checkout}, {removeItem, updateItem, updateField}] = useCart();
   const [currentStep, setCurrentStep] = useState<"details" | "fields">("details");
 
-  function handleUpdateCart(id: number, item: CartItem) {
+  function handleUpdateCart(id: string, item: CartItem) {
     if (!item.quantity) {
       removeItem(id);
 

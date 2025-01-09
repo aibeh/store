@@ -3,7 +3,8 @@ import type {Cart, CartItem, Checkout} from "./types";
 import {parseCurrency} from "~/currency/utils";
 
 export function getCartItemPrice(item: CartItem): number {
-  let total = item.price;
+  // Start with base price multiplied by quantity
+  let total = item.price * item.quantity;
 
   if (item.options) {
     Object.values(item.options).forEach((category) => {
@@ -12,8 +13,8 @@ export function getCartItemPrice(item: CartItem): number {
           // For stepper options, multiply price by quantity
           total += (option.price || 0) * (option.quantity || 0);
         } else {
-          // For radio options, just add the price
-          total += option.price || 0;
+          // For radio options, multiply by item quantity since they apply to each item
+          total += (option.price || 0) * item.quantity;
         }
       });
     });

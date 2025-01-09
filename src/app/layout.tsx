@@ -37,7 +37,8 @@ const RootLayout = async ({children}: {children: React.ReactNode}) => {
               <Hero store={store} />
               <HowItWorks />
             </header>
-            <main className="px-4">
+            <main className="flex flex-col gap-4 px-4">
+              <h2 className="text-4xl">Hacé tu pedido</h2>
               <CartProvider>{children}</CartProvider>
             </main>
             <footer className="px-4">

@@ -176,7 +176,7 @@ function StoreScreen({products, selected}: {products: Product[]; selected: null 
           item={{...selected!, quantity: 1}}
           onClose={() => router.push("/", {scroll: false})}
           onSubmit={(item) => {
-            addItem(Date.now(), item);
+            addItem(Date.now().toString(), item);
             router.push("/", {scroll: false});
           }}
         />

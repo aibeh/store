@@ -8,11 +8,11 @@ import {Button} from "@/components/ui/button";
 
 import {getCartItemPrice, getCartItemOptionsSummary} from "../../utils";
 
-function Details({cart, onChange}: {cart: Cart; onChange: (id: number, item: CartItem) => void}) {
+function Details({cart, onChange}: {cart: Cart; onChange: (id: string, item: CartItem) => void}) {
   return (
     <div className="flex flex-col gap-4">
       {Array.from(cart.entries()).map(([id, item]) => (
-        <div key={id.toString()} className="flex gap-2" data-testid={`cart-item-${item.id}`}>
+        <div key={id} className="flex gap-2" data-testid={`cart-item-${item.id}`}>
           <div className="flex w-full flex-col gap-1">
             <div className="flex items-start justify-between gap-4">
               <div className="flex flex-col">

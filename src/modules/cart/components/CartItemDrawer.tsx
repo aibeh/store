@@ -200,19 +200,38 @@ function CartItemDrawer({
                           );
                           const quantity = currentOption?.quantity || 0;
 
-                          let min = 0;
+                          // Calculate total quantity for the category
+                          const categoryTotal =
+                            formData.options?.[category.title]?.options.reduce(
+                              (sum, opt) => sum + (opt.quantity || 0),
+                              0,
+                            ) || 0;
+
+                          const min = 0;
                           let max: number | undefined;
 
                           if (condition) {
                             switch (condition.operator) {
                               case ">":
-                                min = condition.value + 1;
+                                // Allow increment if category total is not yet satisfied
+                                max =
+                                  condition.value + 1 > categoryTotal - quantity
+                                    ? undefined
+                                    : quantity;
                                 break;
                               case "=":
-                                max = condition.value;
+                                // Only allow increment if we haven't reached the total
+                                max =
+                                  condition.value > categoryTotal - quantity
+                                    ? quantity + (condition.value - categoryTotal)
+                                    : quantity;
                                 break;
                               case "<":
-                                max = condition.value - 1;
+                                // Only allow increment if we would still be under the limit
+                                max =
+                                  categoryTotal - quantity + 1 < condition.value
+                                    ? undefined
+                                    : quantity;
                                 break;
                             }
                           }

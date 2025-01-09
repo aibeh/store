@@ -22,9 +22,9 @@ interface Context {
     message: string;
   };
   actions: {
-    addItem: (id: number, value: CartItem) => void;
-    removeItem: (id: number) => void;
-    updateItem: (id: number, value: CartItem) => void;
+    addItem: (id: string, value: CartItem) => void;
+    removeItem: (id: string) => void;
+    updateItem: (id: string, value: CartItem) => void;
     updateField: (id: string, value: string) => void;
   };
 }
@@ -50,32 +50,35 @@ function CartProviderClient({
   );
   const message = useMemo(() => getCartMessage(cart, checkout), [cart, checkout]);
 
-  const addItem = useCallback(
-    (id: number, value: CartItem) => {
-      cart.set(id, value);
+  const addItem = useCallback((id: string, value: CartItem) => {
+    setCart((cart) => {
+      const newCart = new Map(cart);
 
-      setCart(new Map(cart));
-    },
-    [cart],
-  );
+      newCart.set(id, value);
 
-  const removeItem = useCallback(
-    (id: number) => {
-      cart.delete(id);
+      return newCart;
+    });
+  }, []);
 
-      setCart(new Map(cart));
-    },
-    [cart],
-  );
+  const removeItem = useCallback((id: string) => {
+    setCart((cart) => {
+      const newCart = new Map(cart);
 
-  const updateItem = useCallback(
-    (id: number, value: CartItem) => {
-      cart.set(id, value);
+      newCart.delete(id);
 
-      setCart(new Map(cart));
-    },
-    [cart],
-  );
+      return newCart;
+    });
+  }, []);
+
+  const updateItem = useCallback((id: string, item: CartItem) => {
+    setCart((cart) => {
+      const newCart = new Map(cart);
+
+      newCart.set(id, item);
+
+      return newCart;
+    });
+  }, []);
 
   const updateField = useCallback(
     (id: string, value: string) => {
@@ -91,8 +94,13 @@ function CartProviderClient({
     [checkout, cart, total, quantity, message],
   );
   const actions = useMemo(
-    () => ({updateItem, updateField, addItem, removeItem}),
-    [updateItem, updateField, addItem, removeItem],
+    () => ({
+      removeItem,
+      updateItem,
+      addItem,
+      updateField,
+    }),
+    [removeItem, updateItem, addItem, updateField],
   );
 
   return (

@@ -11,7 +11,7 @@ export function AboutAgus({store}: {store: Store}) {
             <Image alt="Agus" className="rounded-full" height={300} src={store.logo} width={300} />
           </div>
           <div className="w-full flex-1 text-center md:text-left">
-            <h2 className="mb-4 text-3xl font-light">Soy Agus</h2>
+            <h2 className="mb-4 text-3xl font-light">¡Hola! Soy Agus :)</h2>
             <p className="mb-4 text-muted-foreground">
               Estudiante de Lic. Nutrición (UBA). Mi misión es ayudarte a adoptar hábitos
               alimenticios más saludables, brindándote opciones ricas, nutritivas, y sobre todo,
