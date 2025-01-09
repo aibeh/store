@@ -31,14 +31,16 @@ const RootLayout = async ({children}: {children: React.ReactNode}) => {
       <head />
       <body className="font-sans antialiased">
         <ThemeProvider>
-          <div className="m-auto max-w-screen-xl rounded-sm">
+          <div className="m-auto flex max-w-screen-xl flex-col rounded-sm">
             <header>
               <Header store={store} />
               <Hero store={store} />
               <HowItWorks />
             </header>
             <main className="flex flex-col gap-4 px-4">
-              <h2 className="text-4xl">Hacé tu pedido</h2>
+              <h2 className="flex flex-col text-center text-2xl font-medium md:text-4xl">
+                <span>Hacé tu pedido</span>
+              </h2>
               <CartProvider>{children}</CartProvider>
             </main>
             <footer className="px-4">

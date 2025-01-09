@@ -1,7 +1,7 @@
 export function HowItWorks() {
   return (
     <section className="py-12">
-      <div className="container mx-auto max-w-3xl text-center">
+      <div className="container mx-auto text-center">
         <h2 className="mb-8 text-3xl font-light text-foreground">¿Cómo funciona AIBEH?</h2>
         <p className="text-muted-foreground">
           En AIBEH, ofrecemos un <span className="font-medium">Menú saludable</span> con{" "}

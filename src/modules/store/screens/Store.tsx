@@ -73,10 +73,7 @@ function StoreScreen({products, selected}: {products: Product[]; selected: null 
     <>
       <div className="flex flex-col">
         {/* Filters */}
-        <div
-          className="sticky top-0 z-10 flex items-center justify-between gap-4 bg-background py-4"
-          id="filters"
-        >
+        <div className="z-10 flex items-center justify-between gap-4 py-4" id="filters">
           <div className="relative flex w-full items-center sm:max-w-xs">
             <SearchIcon className="absolute left-3 h-4 w-4 opacity-40" />
             <Input
