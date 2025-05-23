@@ -42,28 +42,30 @@ export function getCartItemOptionsSummary(
     .reduce<string[]>(
       (_options, [category, { options }]) =>
         _options.concat(
-          `${category}: ${options.map((opt) => opt.title).join(", ")}`,
+          `  • ${category}:\n    - ${options.map((opt) => opt.title).join("\n    - ")}`,
         ),
       [],
     )
-    .join(", ");
+    .join("\n");
 }
 
 export function getCartMessage(cart: Cart, checkout: Checkout): string {
   const items = Array.from(cart.values())
     .map(
       (item) =>
-        `* ${item.title}${item.quantity > 1 ? ` (X${item.quantity})` : ``}${
+        `• ${item.title}${item.quantity > 1 ? ` (X${item.quantity})` : ``} - ${parseCurrency(getCartItemPrice(item))}${
           item.options && Object.keys(item.options).length > 0
-            ? ` [${getCartItemOptionsSummary(item.options)}]`
+            ? `\n${getCartItemOptionsSummary(item.options)}`
             : ``
-        } - ${parseCurrency(getCartItemPrice(item))}`,
+        }`,
     )
-    .join("\n");
+    .join("\n\n");
+
   const fields = Array.from(checkout.entries())
-    .map(([key, value]) => `* ${key}: ${value}`)
+    .map(([key, value]) => `• ${key}: ${value}`)
     .join("\n");
-  const total = `Total: ${parseCurrency(getCartTotal(cart))}`;
+
+  const total = `\nTotal: ${parseCurrency(getCartTotal(cart))}`;
 
   return [items, fields, total].filter(Boolean).join("\n\n");
 }
