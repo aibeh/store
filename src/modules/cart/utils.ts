@@ -1,6 +1,6 @@
-import type {Cart, CartItem, Checkout} from "./types";
+import type { Cart, CartItem, Checkout } from "./types";
 
-import {parseCurrency} from "~/currency/utils";
+import { parseCurrency } from "~/currency/utils";
 
 export function getCartItemPrice(item: CartItem): number {
   // Start with base price multiplied by quantity
@@ -10,7 +10,9 @@ export function getCartItemPrice(item: CartItem): number {
     Object.values(item.options).forEach((category) => {
       category.options.forEach((option) => {
         const conditions = category.condition?.split("||") || [];
-        const hasQuantityCondition = conditions.some(c => c.match(/^[><=]\d+$/));
+        const hasQuantityCondition = conditions.some((c) =>
+          c.match(/^[><=]\d+$/),
+        );
 
         if (hasQuantityCondition) {
           // For stepper options, multiply price by quantity
@@ -27,14 +29,21 @@ export function getCartItemPrice(item: CartItem): number {
 }
 
 export function getCartTotal(cart: Cart): number {
-  return Array.from(cart.values()).reduce((total, item) => total + getCartItemPrice(item), 0);
+  return Array.from(cart.values()).reduce(
+    (total, item) => total + getCartItemPrice(item),
+    0,
+  );
 }
 
-export function getCartItemOptionsSummary(options: CartItem["options"]): string {
+export function getCartItemOptionsSummary(
+  options: CartItem["options"],
+): string {
   return Object.entries(options!)
     .reduce<string[]>(
-      (_options, [category, {options}]) =>
-        _options.concat(`${category}: ${options.map((opt) => opt.title).join(", ")}`),
+      (_options, [category, { options }]) =>
+        _options.concat(
+          `${category}: ${options.map((opt) => opt.title).join(", ")}`,
+        ),
       [],
     )
     .join(", ");
