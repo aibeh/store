@@ -38,7 +38,7 @@ const RootLayout = async ({children}: {children: React.ReactNode}) => {
               <HowItWorks />
             </header>
             <main className="flex flex-col gap-4 px-4">
-              <h2 className="flex flex-col text-center text-2xl font-medium md:text-4xl bg-gray-100 py-4">
+              <h2 className="flex flex-col text-center text-2xl font-medium md:text-4xl bg-foreground/50 py-4">
                 <span>¡Hacé tu pedido!</span>
               </h2>
               <CartProvider>{children}</CartProvider>
