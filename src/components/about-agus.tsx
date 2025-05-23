@@ -26,15 +26,14 @@ export function AboutAgus({store}: {store: Store}) {
             <p className="mb-6 text-muted-foreground">
               Además, cuento con un excelente equipo que ayuda para que todo esto sea posible:
             </p>
-            <ul className="mb-6 flex list-disc flex-col gap-4 text-muted-foreground">
+            <ul className="mb-6 list-disc pl-6 text-muted-foreground">
               <li>
                 Bauti, mi novio y Prof. de Educación Física, se encarga de las redes sociales, la
                 logística y la gestión de proveedores, asegurando que todo funcione de manera
                 perfecta. Eso sí, ¡en la cocina no pisa! 😄
               </li>
               <li>
-                Eli, mi increíble ayudante de cocina, comparte mi pasión por una alimentación
-                equilibrada y siempre aporta su toque de creatividad y perfección a cada receta.
+                Elizabeth, Nicole y Valeria mis increíbles ayudantes de cocina, quienes comparten mi pasión por una alimentación saludable y siempre aportan su toque de creatividad y perfección a cada receta.
               </li>
             </ul>
             <p className="text-muted-foreground">
