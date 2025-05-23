@@ -69,6 +69,11 @@ class Product implements IProduct {
     category = category.trim();
     condition = condition.trim();
 
+    // Check if the category contains ||required
+    if (option.category.includes("||required")) {
+      condition = condition ? `${condition}||required` : "required";
+    }
+
     if (!this.options) {
       this.options = {};
     }

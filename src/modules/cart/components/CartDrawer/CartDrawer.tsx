@@ -34,6 +34,16 @@ function CartDrawer({
   const [{total, message, cart, checkout}, {removeItem, updateItem, updateField}] = useCart();
   const [currentStep, setCurrentStep] = useState<"details" | "fields">("details");
 
+  function validateRequiredFields(): boolean {
+    if (!fields) return true;
+
+    return fields.every((field) => {
+      if (!field.required) return true;
+      const value = checkout.get(field.title);
+      return Boolean(value && value.trim());
+    });
+  }
+
   function handleUpdateCart(id: string, item: CartItem) {
     if (!item.quantity) {
       removeItem(id);
@@ -111,7 +121,13 @@ function CartDrawer({
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                <Button className="w-full" data-testid="complete-order" size="lg" variant="brand">
+                <Button
+                  className="w-full"
+                  data-testid="complete-order"
+                  size="lg"
+                  variant="brand"
+                  disabled={!validateRequiredFields()}
+                >
                   <div className="inline-flex items-center gap-2">
                     <WhatsappIcon />
                     <span>Completar pedido</span>

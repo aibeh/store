@@ -9,12 +9,15 @@ export function getCartItemPrice(item: CartItem): number {
   if (item.options) {
     Object.values(item.options).forEach((category) => {
       category.options.forEach((option) => {
-        if (category.condition) {
+        const conditions = category.condition?.split("||") || [];
+        const hasQuantityCondition = conditions.some(c => c.match(/^[><=]\d+$/));
+
+        if (hasQuantityCondition) {
           // For stepper options, multiply price by quantity
           total += (option.price || 0) * (option.quantity || 0);
         } else {
-          // For radio options, multiply by item quantity since they apply to each item
-          total += (option.price || 0) * item.quantity;
+          // For radio options, just add the price once
+          total += option.price || 0;
         }
       });
     });

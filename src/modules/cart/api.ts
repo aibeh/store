@@ -7,7 +7,7 @@ interface RawField {
   type: "radio" | "text";
   text: string;
   note: string;
-  required: boolean;
+  required: string;
 }
 
 function normalize(data: RawField[]): Field[] {
@@ -18,7 +18,7 @@ function normalize(data: RawField[]): Field[] {
           title: field.title,
           type: "radio",
           options: field.text.split(",").map((option) => option.trim()),
-          required: field.required,
+          required: field.required === "TRUE",
           note: field.note || "",
         };
 
@@ -30,7 +30,7 @@ function normalize(data: RawField[]): Field[] {
           title: field.title,
           type: "text",
           placeholder: field.text,
-          required: field.required,
+          required: field.required === "TRUE",
           note: field.note || "",
         };
 

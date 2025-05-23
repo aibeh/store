@@ -110,7 +110,10 @@ function CartItemDrawer({
         }
       } else {
         // Radio case - replace all options
-        newOptions = [option];
+        newOptions = [{
+          ...option,
+          title: option.title,
+        }];
       }
 
       // Filter out options with quantity 0
@@ -135,8 +138,21 @@ function CartItemDrawer({
     return Object.entries(item.options).every(([categoryTitle, category]) => {
       if (!category.condition) return true;
 
-      const condition = parseCondition(category.condition);
+      const conditions = category.condition.split("||");
+      const isRequired = conditions.includes("required");
+      const quantityCondition = conditions.find(c => c !== "required");
 
+      // For radio buttons (no quantity condition)
+      if (!quantityCondition) {
+        if (isRequired) {
+          // Check if any option is selected
+          return Boolean(formData.options?.[categoryTitle]?.options.length);
+        }
+        return true;
+      }
+
+      // For steppers (with quantity condition)
+      const condition = parseCondition(quantityCondition);
       if (!condition) return true;
 
       const totalQuantity =
@@ -191,101 +207,64 @@ function CartItemDrawer({
                   return (
                     <div key={category.title} className="flex w-full flex-col gap-4">
                       <p className="text-lg font-medium">{category.title}</p>
-                      {category.condition ? (
-                        // Stepper case
-                        category.options.map((option) => {
-                          const condition = parseCondition(category.condition);
-                          const currentOption = formData.options?.[category.title]?.options.find(
-                            (opt) => opt.title.split(" x ")[0] === option.title,
-                          );
-                          const quantity = currentOption?.quantity || 0;
+                      {(() => {
+                        const conditions = category.condition.split("||");
+                        const isRequired = conditions.includes("required");
+                        const quantityCondition = conditions.find(c => c !== "required");
 
-                          // Calculate total quantity for the category
-                          const categoryTotal =
-                            formData.options?.[category.title]?.options.reduce(
-                              (sum, opt) => sum + (opt.quantity || 0),
-                              0,
-                            ) || 0;
-
-                          const min = 0;
-                          let max: number | undefined;
-
-                          if (condition) {
-                            switch (condition.operator) {
-                              case ">":
-                                // Allow increment if category total is not yet satisfied
-                                max =
-                                  condition.value + 1 > categoryTotal - quantity
-                                    ? undefined
-                                    : quantity;
-                                break;
-                              case "=":
-                                // Only allow increment if we haven't reached the total
-                                max =
-                                  condition.value > categoryTotal - quantity
-                                    ? quantity + (condition.value - categoryTotal)
-                                    : quantity;
-                                break;
-                              case "<":
-                                // Only allow increment if we would still be under the limit
-                                max =
-                                  categoryTotal - quantity + 1 < condition.value
-                                    ? undefined
-                                    : quantity;
-                                break;
-                            }
-                          }
-
-                          return (
-                            <div
-                              key={option.title}
-                              className="flex items-center justify-between gap-x-3"
-                            >
-                              <Label className="flex-1">
-                                <div className="flex items-center gap-2">
-                                  <span>{option.title}</span>
-                                  {Boolean(option.price) && (
-                                    <div className="flex items-center gap-1">
-                                      <p className="text-muted-foreground">
-                                        {option.price < 0 ? "-" : "+"}
-                                      </p>
-                                      <p className="font-medium">
-                                        {parseCurrency(Math.abs(option.price))}
-                                      </p>
-                                    </div>
-                                  )}
-                                </div>
-                              </Label>
-                              <Stepper
-                                max={max}
-                                min={min}
-                                value={quantity}
-                                onChange={(value) => handleSelectOption(option, category, value)}
-                              />
-                            </div>
-                          );
-                        })
-                      ) : (
-                        // Radio group case
-                        <RadioGroup
-                          defaultValue={formData.options?.[category.title]?.options[0]?.title}
-                          onValueChange={(value) => {
-                            const selectedOption = category.options.find(
-                              (opt) => opt.title === value,
+                        if (quantityCondition) {
+                          // Stepper case
+                          return category.options.map((option) => {
+                            const condition = parseCondition(quantityCondition);
+                            const currentOption = formData.options?.[category.title]?.options.find(
+                              (opt) => opt.title.split(" x ")[0] === option.title,
                             );
+                            const quantity = currentOption?.quantity || 0;
 
-                            if (selectedOption) {
-                              handleSelectOption(selectedOption, category);
+                            // Calculate total quantity for the category
+                            const categoryTotal =
+                              formData.options?.[category.title]?.options.reduce(
+                                (sum, opt) => sum + (opt.quantity || 0),
+                                0,
+                              ) || 0;
+
+                            const min = 0;
+                            let max: number | undefined;
+
+                            if (condition) {
+                              switch (condition.operator) {
+                                case ">":
+                                  // Allow increment if category total is not yet satisfied
+                                  max =
+                                    condition.value + 1 > categoryTotal - quantity
+                                      ? undefined
+                                      : quantity;
+                                  break;
+                                case "=":
+                                  // Only allow increment if we haven't reached the total
+                                  max =
+                                    condition.value > categoryTotal - quantity
+                                      ? quantity + (condition.value - categoryTotal)
+                                      : quantity;
+                                  break;
+                                case "<":
+                                  // Only allow increment if we would still be under the limit
+                                  max =
+                                    categoryTotal - quantity + 1 < condition.value
+                                      ? undefined
+                                      : quantity;
+                                  break;
+                              }
                             }
-                          }}
-                        >
-                          <div className="flex flex-col gap-4">
-                            {category.options.map((option) => (
-                              <div key={option.title} className="flex items-center gap-x-3">
-                                <RadioGroupItem id={option.title} value={option.title} />
-                                <Label className="w-full" htmlFor={option.title}>
-                                  <div className="flex w-full items-center justify-between gap-2">
-                                    <p>{option.title}</p>
+
+                            return (
+                              <div
+                                key={option.title}
+                                className="flex items-center justify-between gap-x-3"
+                              >
+                                <Label className="flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <span>{option.title}</span>
                                     {Boolean(option.price) && (
                                       <div className="flex items-center gap-1">
                                         <p className="text-muted-foreground">
@@ -298,15 +277,68 @@ function CartItemDrawer({
                                     )}
                                   </div>
                                 </Label>
+                                <Stepper
+                                  max={max}
+                                  min={min}
+                                  value={quantity}
+                                  onChange={(value) => handleSelectOption(option, category, value)}
+                                />
                               </div>
-                            ))}
-                          </div>
-                        </RadioGroup>
-                      )}
+                            );
+                          });
+                        } else {
+                          // Radio group case
+                          return (
+                            <RadioGroup
+                              defaultValue={formData.options?.[category.title]?.options[0]?.title}
+                              onValueChange={(value) => {
+                                const selectedOption = category.options.find(
+                                  (opt) => opt.title === value,
+                                );
+
+                                if (selectedOption) {
+                                  handleSelectOption(selectedOption, category);
+                                }
+                              }}
+                            >
+                              <div className="flex flex-col gap-4">
+                                {category.options.map((option) => (
+                                  <div key={option.title} className="flex items-center gap-x-3">
+                                    <RadioGroupItem id={option.title} value={option.title} />
+                                    <Label className="w-full" htmlFor={option.title}>
+                                      <div className="flex w-full items-center justify-between gap-2">
+                                        <p>{option.title}</p>
+                                        {Boolean(option.price) && (
+                                          <div className="flex items-center gap-1">
+                                            <p className="text-muted-foreground">
+                                              {option.price < 0 ? "-" : "+"}
+                                            </p>
+                                            <p className="font-medium">
+                                              {parseCurrency(Math.abs(option.price))}
+                                            </p>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </Label>
+                                  </div>
+                                ))}
+                              </div>
+                            </RadioGroup>
+                          );
+                        }
+                      })()}
                       {category.condition ? (
                         <div className="text-sm text-muted-foreground">
                           {(() => {
-                            const condition = parseCondition(category.condition);
+                            const conditions = category.condition.split("||");
+                            const isRequired = conditions.includes("required");
+                            const quantityCondition = conditions.find(c => c !== "required");
+
+                            if (!quantityCondition) {
+                              return isRequired ? "✓ Seleccione una opción" : null;
+                            }
+
+                            const condition = parseCondition(quantityCondition);
 
                             if (!condition) return null;
 
