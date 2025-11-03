@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   const products = await api.list();
 
   for (const product of products) {
-    revalidatePath(`/${product.id}`)
+    revalidatePath(`/${product.id}`, "layout")
   }
 
   return NextResponse.json({revalidated: true});
