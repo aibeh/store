@@ -13,7 +13,6 @@ export function HowItWorks() {
           Tomamos pedidos de <span className="font-medium">Viernes</span> a{" "}
           <span className="font-medium">Domingo</span>, y realizamos las{" "}
           <span className="italic">entregas a domicilio</span>{" "}
-          <span className="font-medium">SIN CARGO</span> los días{" "}
           <span className="font-medium">Miércoles</span> de{" "}
           <span className="font-medium">18:00 a 21:00 hs.</span> También, podés pasar a retirar tu
           pedido por Bernal Centro / Wilde los días Jueves.
