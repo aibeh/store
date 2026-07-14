@@ -3,6 +3,8 @@ import type {Metadata} from "next";
 import {Bebas_Neue, Dancing_Script, Inter, Poppins} from "next/font/google";
 
 import api from "~/store/api";
+import productApi from "~/product/api";
+import {getWeeklyMenu} from "~/product/utils";
 import CartProvider from "~/cart/context";
 import ThemeProvider from "~/theme/context";
 
@@ -42,6 +44,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const RootLayout = async ({children}: {children: React.ReactNode}) => {
   const store = await api.fetch();
+  const products = await productApi.list();
+  const weeklyMenu = getWeeklyMenu(products);
 
   return (
     <html
@@ -56,7 +60,7 @@ const RootLayout = async ({children}: {children: React.ReactNode}) => {
             <header>
               <Header store={store} />
               <Hero store={store} />
-              <HowItWorks />
+              <HowItWorks weeklyMenu={weeklyMenu} />
             </header>
             <main className="flex flex-col gap-2 border-t-2 border-foreground/20 px-4 pt-10">
               <h2 className="font-heading text-center text-4xl tracking-wide">¡Hacé tu pedido!</h2>

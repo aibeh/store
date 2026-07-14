@@ -23,7 +23,7 @@ const STEPS = [
   },
 ];
 
-export function HowItWorks() {
+export function HowItWorks({weeklyMenu}: {weeklyMenu: string[]}) {
   return (
     <section className="py-12">
       <div className="container mx-auto text-center">
@@ -55,9 +55,11 @@ export function HowItWorks() {
           ))}
         </div>
 
-        <div className="mt-10">
-          <WeeklyMenuPopup />
-        </div>
+        {Boolean(weeklyMenu.length) && (
+          <div className="mt-10">
+            <WeeklyMenuPopup items={weeklyMenu} />
+          </div>
+        )}
       </div>
     </section>
   );

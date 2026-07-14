@@ -3,36 +3,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import {X} from "lucide-react";
 
-const MENU_ITEMS = [
-  {
-    title: "Milanesas de pollo con ensalada",
-    description: "Milanesas de pollo con ensalada de lechuga, tomate, zanahoria y huevo.",
-  },
-  {
-    title: "Malfattis de calabaza con queso azul",
-    description:
-      "Malfattis de calabaza rellenos de queso azul + Salsa de queso crema saludable y verdeo.",
-  },
-  {
-    title: "Albóndigas de pollo con puré mixto",
-    description: "Albóndigas de pollo con dip de salsa de tomate natural + Puré mixto (Papa y calabaza).",
-  },
-  {
-    title: "Tarta integral tricolor",
-    description: "Tarta integral casera tricolor: Calabaza, acelga y ricota.",
-  },
-  {
-    title: "Fajitas integrales rellenas",
-    description:
-      "Fajita integral rellena de: Huevo a la plancha, cerdo desmechado, verduras y queso + Batatas asadas y coliflor.",
-  },
-  {
-    title: "Medallones veggies con tortilla",
-    description: "Medallones veggies de arroz y lentejas a la napolitana con tortilla de papa y zanahoria.",
-  },
-];
-
-export function WeeklyMenuPopup() {
+export function WeeklyMenuPopup({items}: {items: string[]}) {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
@@ -64,19 +35,12 @@ export function WeeklyMenuPopup() {
               </div>
 
               <div className="flex flex-col gap-3.5 px-5 pb-4 pt-5">
-                {MENU_ITEMS.map((item, index) => (
-                  <div key={item.title} className="flex items-start gap-3.5">
+                {items.map((title, index) => (
+                  <div key={title} className="flex items-start gap-3.5">
                     <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-500 font-poppins text-sm font-bold text-white">
                       {index + 1}
                     </span>
-                    <div>
-                      <p className="mb-0.5 font-poppins text-sm font-bold leading-tight text-white">
-                        {item.title}
-                      </p>
-                      <p className="font-poppins text-xs leading-relaxed text-white/60">
-                        {item.description}
-                      </p>
-                    </div>
+                    <p className="font-poppins text-sm font-bold leading-snug text-white">{title}</p>
                   </div>
                 ))}
               </div>
