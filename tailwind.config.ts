@@ -20,6 +20,12 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["var(--font-inter)", "sans-serif"],
+        poppins: ["var(--font-poppins)", "sans-serif"],
+        heading: ["var(--font-bebas)", "cursive"],
+        script: ["var(--font-dancing)", "cursive"],
+      },
       colors: {
         brand: colors[process.env.COLOR!] || colors.teal,
         border: "hsl(var(--border))",
