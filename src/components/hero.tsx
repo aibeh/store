@@ -11,13 +11,13 @@ export function Hero({store}: {store: Store}) {
       >
         <div className="absolute inset-0 bg-black/40" />
       </div>
-      <div className="relative flex h-full flex-col items-center justify-center text-center text-white">
-        <h1 className="mb-2 text-4xl font-light shadow-[0_35px_60px_-15px_rgba(0,0,0,1)] drop-shadow-2xl">
+      <div className="relative flex h-full flex-col items-center justify-center px-4 text-center text-white">
+        <h1 className="mb-3 font-heading text-[clamp(2.5rem,7vw,5rem)] leading-[1.05] tracking-wide drop-shadow-[0_2px_20px_rgba(0,0,0,.5)]">
           Comer rico y sano, nunca fue tan fácil
         </h1>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 font-poppins text-sm font-bold uppercase tracking-[.18em]">
           <div className="h-px w-12 bg-white" />
-          <h2 className="text-lg font-medium tracking-wide">VIANDAS SALUDABLES</h2>
+          <h2>Viandas Saludables</h2>
           <div className="h-px w-12 bg-white" />
         </div>
       </div>
