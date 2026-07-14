@@ -8,6 +8,8 @@ import {getWeeklyMenu} from "~/product/utils";
 import CartProvider from "~/cart/context";
 import ThemeProvider from "~/theme/context";
 
+import Image from "next/image";
+
 import "./globals.css";
 import {Header} from "@/components/header";
 import {Hero} from "@/components/hero";
@@ -62,7 +64,14 @@ const RootLayout = async ({children}: {children: React.ReactNode}) => {
               <Hero store={store} />
               <HowItWorks weeklyMenu={weeklyMenu} />
             </header>
-            <main className="flex flex-col gap-2 border-t-2 border-foreground/20 px-4 pt-10">
+            <main className="relative flex flex-col gap-2 overflow-hidden border-t-2 border-foreground/20 px-4 pt-10">
+              <Image
+                src="/assets/order-bg-deco.webp"
+                alt=""
+                aria-hidden="true"
+                fill
+                className="pointer-events-none absolute inset-0 -z-10 select-none object-cover opacity-[0.04] mix-blend-multiply"
+              />
               <h2 className="font-heading text-center text-4xl tracking-wide">¡Hacé tu pedido!</h2>
               <p className="mb-6 text-center font-script text-3xl text-muted-foreground">
                 Tu semana saludable empieza acá.
