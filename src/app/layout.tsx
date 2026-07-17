@@ -64,7 +64,10 @@ const RootLayout = async ({children}: {children: React.ReactNode}) => {
               <Hero store={store} />
               <HowItWorks weeklyMenu={weeklyMenu} />
             </header>
-            <main className="relative flex flex-col gap-2 overflow-hidden border-t-2 border-foreground/20 px-4 pt-10">
+            <main
+              className="relative flex flex-col gap-2 overflow-hidden border-t-2 border-foreground/20 px-4 pt-10"
+              id="hace-tu-pedido"
+            >
               <Image
                 src="/assets/order-bg-deco.webp"
                 alt=""

@@ -4,6 +4,7 @@ import type {CartItem, Field} from "../../types";
 
 import {useEffect, useState} from "react";
 import {X} from "lucide-react";
+import Image from "next/image";
 
 import {
   Sheet,
@@ -66,7 +67,14 @@ function CartDrawer({
 
   return (
     <Sheet open onOpenChange={(_isOpen) => !_isOpen && onClose()} {...props}>
-      <SheetContent className="grid grid-cols-1 grid-rows-[auto_1fr_auto]">
+      <SheetContent className="grid grid-cols-1 grid-rows-[auto_1fr_auto] overflow-hidden">
+        <Image
+          src="/assets/order-bg-deco.webp"
+          alt=""
+          aria-hidden="true"
+          fill
+          className="pointer-events-none absolute inset-0 -z-10 select-none object-cover opacity-[0.04] mix-blend-multiply"
+        />
         <SheetHeader>
           <SheetClose className="-mx-6 ml-auto h-12 w-14 rounded-l-lg border border-border bg-background py-2 pl-2 pr-4 shadow-lg">
             <X className="h-8 w-8" />
@@ -91,6 +99,20 @@ function CartDrawer({
               </div>
               <Button
                 className="w-full"
+                data-testid="keep-shopping"
+                size="lg"
+                variant="brand"
+                onClick={() => {
+                  onClose();
+                  document
+                    .getElementById("hace-tu-pedido")
+                    ?.scrollIntoView({behavior: "smooth", block: "start"});
+                }}
+              >
+                Quiero sumar otros productos a mi pedido
+              </Button>
+              <Button
+                className="w-full"
                 data-testid="continue-order"
                 size="lg"
                 variant="brand"
@@ -98,7 +120,7 @@ function CartDrawer({
                   setCurrentStep("fields");
                 }}
               >
-                Continuar
+                Finalizar mi pedido
               </Button>
             </div>
           ) : null}

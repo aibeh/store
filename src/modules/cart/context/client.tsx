@@ -26,6 +26,7 @@ interface Context {
     removeItem: (id: string) => void;
     updateItem: (id: string, value: CartItem) => void;
     updateField: (id: string, value: string) => void;
+    openCart: () => void;
   };
 }
 
@@ -89,6 +90,10 @@ function CartProviderClient({
     [checkout],
   );
 
+  const openCart = useCallback(() => {
+    setIsCartOpen(true);
+  }, []);
+
   const state = useMemo(
     () => ({checkout, cart, total, quantity, message}),
     [checkout, cart, total, quantity, message],
@@ -99,8 +104,9 @@ function CartProviderClient({
       updateItem,
       addItem,
       updateField,
+      openCart,
     }),
-    [removeItem, updateItem, addItem, updateField],
+    [removeItem, updateItem, addItem, updateField, openCart],
   );
 
   return (
@@ -116,9 +122,7 @@ function CartProviderClient({
               data-testid="show-cart"
               size="lg"
               variant="brand"
-              onClick={() => {
-                setIsCartOpen(true);
-              }}
+              onClick={openCart}
             >
               <div className="flex w-full items-center justify-between gap-4">
                 <div className="flex items-center gap-2">

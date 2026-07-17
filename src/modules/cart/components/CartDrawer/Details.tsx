@@ -6,7 +6,7 @@ import {parseCurrency} from "~/currency/utils";
 
 import {Button} from "@/components/ui/button";
 
-import {getCartItemPrice, getCartItemOptionsSummary} from "../../utils";
+import {getCartItemPrice} from "../../utils";
 
 function Details({cart, onChange}: {cart: Cart; onChange: (id: string, item: CartItem) => void}) {
   return (
@@ -17,9 +17,6 @@ function Details({cart, onChange}: {cart: Cart; onChange: (id: string, item: Car
             <div className="flex items-start justify-between gap-4">
               <div className="flex flex-col">
                 <p className="text-lg font-medium">{item.title}</p>
-                {Boolean(item.options) && (
-                  <p className="text-muted-foreground">{getCartItemOptionsSummary(item.options)}</p>
-                )}
               </div>
               <p className="font-medium leading-[1.9rem]">
                 {parseCurrency(getCartItemPrice(item))}

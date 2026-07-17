@@ -20,18 +20,13 @@ export function WeeklyMenuPopup({items}: {items: string[]}) {
               <X className="h-4 w-4" />
             </Dialog.Close>
             <div className="max-h-[88vh] overflow-y-auto rounded-2xl bg-[#1a1a1a] shadow-[0_24px_60px_rgba(0,0,0,.6)] [scrollbar-width:none]">
-              <div className="flex items-start justify-between bg-white/[.04] px-5 pb-2 pt-5">
-                <div>
-                  <p className="font-heading text-3xl leading-none tracking-wide text-white">
-                    Menú Semanal
-                  </p>
-                  <p className="mt-1 font-poppins text-[.65rem] uppercase tracking-[.12em] text-white/65">
-                    Tomamos pedidos de viernes a domingo
-                  </p>
-                </div>
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] bg-brand-500 font-heading text-xl tracking-wide text-white">
-                  A
-                </div>
+              <div className="bg-white/[.04] px-5 pb-2 pt-5">
+                <p className="font-heading text-3xl leading-none tracking-wide text-white">
+                  Menú Semanal
+                </p>
+                <p className="mt-1 font-poppins text-[.65rem] uppercase tracking-[.12em] text-white/65">
+                  Tomamos pedidos de viernes a domingo
+                </p>
               </div>
 
               <div className="flex flex-col gap-3.5 px-5 pb-4 pt-5">
@@ -47,7 +42,7 @@ export function WeeklyMenuPopup({items}: {items: string[]}) {
 
               <div className="my-3 text-center">
                 <span className="inline-flex items-center gap-1 rounded-full border border-[#f3a14b] bg-orange-50 px-3.5 py-1 font-poppins text-xs font-semibold text-[#c27a1e]">
-                  💵 10% OFF pagando en efectivo
+                  💵 5% OFF pagando en efectivo
                 </span>
               </div>
               <p className="border-t border-white/10 px-5 pb-4 pt-3 text-center font-poppins text-[.6rem] font-bold uppercase tracking-[.2em] text-white/40">
