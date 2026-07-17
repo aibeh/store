@@ -30,9 +30,9 @@ export function AboutAgus({store}: {store: Store}) {
             <Image
               alt="Agus y Bauti — fundadores de AIBEH"
               className="rounded-full object-cover"
-              height={220}
+              height={340}
               src={store.logo}
-              width={220}
+              width={340}
             />
           </div>
           <div className="w-full flex-1 text-center md:text-left">
