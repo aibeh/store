@@ -28,12 +28,34 @@ const FAQ_ITEMS = [
   },
   {
     question: "¿Cuáles son los métodos de pago?",
-    answer: "Aceptamos transferencia bancaria, efectivo y Cuenta DNI (tenés reintegro por cada compra 😎).",
+    answer: (
+      <ul className="list-disc space-y-1 pl-4">
+        <li>Efectivo (5% OFF)</li>
+        <li>Transferencia bancaria</li>
+        <li>Cuenta Dni (Tenes reintegro por cada compra)</li>
+      </ul>
+    ),
   },
   {
     question: "¿Cuáles son sus zonas de entrega?",
-    answer:
-      "Nos manejamos exclusivamente con entregas a domicilio. Los días Miércoles entregamos en Zona Sur: Bernal centro y alrededores entre las 17 y 19 hs. · Quilmes centro y alrededores entre las 19 y 21 hs. · Wilde y alrededores entre las 20 y 21 hs. Los días Jueves entregamos en Berazategui y Hudson: entre las 19 y 21 hs.",
+    answer: (
+      <div className="flex flex-col gap-2">
+        <div>
+          <p className="font-semibold text-foreground">Miércoles</p>
+          <ul className="list-disc space-y-1 pl-4">
+            <li>Bernal y alrededores (17:00 a 19:00)</li>
+            <li>Quilmes y alrededores (19:00 a 21:00)</li>
+            <li>Wilde y alrededores (20:00 a 21:00)</li>
+          </ul>
+        </div>
+        <div>
+          <p className="font-semibold text-foreground">Jueves</p>
+          <ul className="list-disc space-y-1 pl-4">
+            <li>Berazategui y Hudson (19:00 a 21:00)</li>
+          </ul>
+        </div>
+      </div>
+    ),
   },
 ];
 
@@ -67,7 +89,7 @@ export function Faq() {
                 </button>
                 <div
                   className={cn("overflow-hidden text-sm leading-relaxed text-muted-foreground transition-[max-height,padding-bottom]", {
-                    "max-h-[320px] pb-4": isOpen,
+                    "max-h-[480px] pb-4": isOpen,
                     "max-h-0": !isOpen,
                   })}
                 >
