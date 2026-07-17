@@ -110,27 +110,27 @@ export function Testimonials() {
             Cada semana, más personas confían en nosotros 🧡
           </p>
         </div>
-        <div className="relative flex items-center gap-2">
+        <div
+          ref={scrollerRef}
+          className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {TESTIMONIALS.map((testimonial, index) => (
+            <TestimonialCard key={testimonial.author} index={index} testimonial={testimonial} />
+          ))}
+        </div>
+        <div className="mt-4 flex items-center justify-center gap-3">
           <button
             aria-label="Ver testimonios anteriores"
-            className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-full border bg-background shadow-sm hover:bg-secondary sm:flex"
+            className="flex h-9 w-9 items-center justify-center rounded-full border bg-background shadow-sm hover:bg-secondary"
             onClick={() => {
               scrollByCard(-1);
             }}
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <div
-            ref={scrollerRef}
-            className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          >
-            {TESTIMONIALS.map((testimonial, index) => (
-              <TestimonialCard key={testimonial.author} index={index} testimonial={testimonial} />
-            ))}
-          </div>
           <button
             aria-label="Ver más testimonios"
-            className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-full border bg-background shadow-sm hover:bg-secondary sm:flex"
+            className="flex h-9 w-9 items-center justify-center rounded-full border bg-background shadow-sm hover:bg-secondary"
             onClick={() => {
               scrollByCard(1);
             }}
