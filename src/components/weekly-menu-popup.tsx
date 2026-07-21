@@ -42,7 +42,7 @@ export function WeeklyMenuPopup({items}: {items: string[]}) {
 
               <div className="my-3 text-center">
                 <span className="inline-flex items-center gap-1 rounded-full border border-[#f3a14b] bg-orange-50 px-3.5 py-1 font-poppins text-xs font-semibold text-[#c27a1e]">
-                  💵 5% OFF pagando en efectivo
+                  💵 10% OFF pagando en efectivo
                 </span>
               </div>
               <p className="border-t border-white/10 px-5 pb-4 pt-3 text-center font-poppins text-[.6rem] font-bold uppercase tracking-[.2em] text-white/40">

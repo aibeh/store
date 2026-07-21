@@ -24,30 +24,37 @@ const TESTIMONIALS: {text: string; author: string; zone?: string}[] = [
   {
     text: "Recién almorcé la primera vianda y necesitaba escribirles. Qué rica estaba! Sinceramente me sorprendio que tenga tanto sabor, y a la vez, sea saludable. Graciassss!",
     author: "Silvana",
+    zone: "Wilde",
   },
   {
     text: "Hace un mes que les compro y la diferencia es enorme. Estoy comiendo mucho mejor, ahorro un montón de tiempo y nunca me canso porque el menú cambia todas las semanas. Los felicito por el trabajo que hacen.",
     author: "Micaela",
+    zone: "Bernal",
   },
   {
     text: "Quería agradecerles porque hacía mucho que buscaba unas viandas saludables que realmente fueran ricas. Siempre llegan impecables, las porciones son generosas y se nota el cuidado en cada detalle.",
     author: "Andrea",
+    zone: "Quilmes",
   },
   {
     text: "Ya probé casi todas las opciones y no hubo una sola que no me gustara. Se sienten caseras, bien condimentadas y nada secas. Además, recalientan perfecto. Son lo mas chicos!",
     author: "Matias",
+    zone: "Bernal",
   },
   {
     text: "Solo quería contarles que ya convencí a mi marido de comer las viandas conmigo. 😂 Al principio decía que se iba a quedar con hambre y ahora cada vez que abrimos el freezer me pregunta cuál toca hoy.",
     author: "Viviana",
+    zone: "Hudson",
   },
   {
     text: "Lo que más me gusta es que puedo comer rico sin tener que pensar qué cocinar todos los días. Llego del trabajo, caliento la vianda y en cinco minutos estoy almorzando. Me cambió completamente la rutina.",
     author: "Paula",
+    zone: "Wilde",
   },
   {
     text: "Gracias por hacer que comer saludable sea tan fácil. Se nota el amor y el tiempo que le ponen a cada preparación. Da gusto encontrar un servicio así.",
     author: "Jorge",
+    zone: "Hudson",
   },
 ];
 
