@@ -7,6 +7,13 @@ import {Input} from "@/components/ui/input";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 import {Label} from "@/components/ui/label";
 
+function normalize(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
 function TextField({
   value,
   onChange,
@@ -38,11 +45,16 @@ function RadioField({
     <RadioGroup value={value} onValueChange={onChange}>
       <div className="flex flex-col gap-4">
         {options.map((option) => (
-          <div key={option} className="flex items-center gap-x-3">
-            <RadioGroupItem id={option} value={option}>
+          <div key={option} className="flex items-start gap-x-3">
+            <RadioGroupItem className="mt-1" id={option} value={option}>
               {option}
             </RadioGroupItem>
-            <Label htmlFor={option}>{option}</Label>
+            <Label htmlFor={option}>
+              <p>{option}</p>
+              {normalize(option).includes(RECOMMENDED_OPTION_KEYWORD) && (
+                <p className="italic text-muted-foreground">(opción recomendada)</p>
+              )}
+            </Label>
           </div>
         ))}
       </div>
@@ -50,14 +62,8 @@ function RadioField({
   );
 }
 
-function normalize(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-}
-
 const CASH_DISCOUNT_RATE = 0.1;
+const RECOMMENDED_OPTION_KEYWORD = "efectivo";
 
 function Fields({
   fields,
