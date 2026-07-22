@@ -1,4 +1,5 @@
 import type { Cart, CartItem, Checkout } from "./types";
+import type { ShippingZone } from "./shipping";
 
 import { parseCurrency } from "~/currency/utils";
 
@@ -49,7 +50,7 @@ export function getCartItemOptionsSummary(
     .join("\n");
 }
 
-export function getCartMessage(cart: Cart, checkout: Checkout): string {
+export function getCartMessage(cart: Cart, checkout: Checkout, shipping: ShippingZone | null): string {
   const items = Array.from(cart.values())
     .map(
       (item) =>
@@ -65,7 +66,18 @@ export function getCartMessage(cart: Cart, checkout: Checkout): string {
     .map(([key, value]) => `• ${key}: ${value}`)
     .join("\n");
 
-  const total = `\nTotal: ${parseCurrency(getCartTotal(cart))}`;
+  const subtotal = getCartTotal(cart);
+  const total = subtotal + (shipping?.price || 0);
+  const shippingLine = shipping
+    ? `\nCosto de envío (${shipping.title}): ${parseCurrency(shipping.price)}`
+    : "";
+  const isCashPayment = Array.from(checkout.values()).some((value) =>
+    value.toLowerCase().includes("efectivo"),
+  );
+  const discountLine = isCashPayment
+    ? `\nTotal con 10% OFF en efectivo: ${parseCurrency(total * 0.9)}`
+    : "";
+  const summary = `\nSubtotal: ${parseCurrency(subtotal)}${shippingLine}\nTotal: ${parseCurrency(total)}${discountLine}`;
 
-  return [items, fields, total].filter(Boolean).join("\n\n");
+  return [items, fields, summary].filter(Boolean).join("\n\n");
 }

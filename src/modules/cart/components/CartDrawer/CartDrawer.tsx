@@ -21,6 +21,7 @@ import {useCart} from "../../context/client";
 
 import Details from "./Details";
 import Fields from "./Fields";
+import Shipping from "./Shipping";
 
 function CartDrawer({
   onClose,
@@ -32,7 +33,10 @@ function CartDrawer({
   store: Store;
   onClose: VoidFunction;
 }) {
-  const [{total, message, cart, checkout}, {removeItem, updateItem, updateField}] = useCart();
+  const [
+    {subtotal, total, totalAmount, shipping, message, cart, checkout},
+    {removeItem, updateItem, updateField, updateShipping},
+  ] = useCart();
   const [currentStep, setCurrentStep] = useState<"details" | "fields">("details");
 
   function validateRequiredFields(): boolean {
@@ -83,9 +87,19 @@ function CartDrawer({
         </SheetHeader>
 
         <div className="overflow-y-auto" data-testid="cart">
-          {currentStep === "details" && <Details cart={cart} onChange={handleUpdateCart} />}
+          {currentStep === "details" && (
+            <>
+              <Details cart={cart} onChange={handleUpdateCart} />
+              <Shipping shipping={shipping} subtotal={subtotal} onChange={updateShipping} />
+            </>
+          )}
           {fields && currentStep === "fields" ? (
-            <Fields checkout={checkout} fields={fields} onChange={handleUpdateField} />
+            <Fields
+              checkout={checkout}
+              fields={fields}
+              totalAmount={totalAmount}
+              onChange={handleUpdateField}
+            />
           ) : null}
         </div>
 
@@ -114,13 +128,14 @@ function CartDrawer({
               <Button
                 className="w-full"
                 data-testid="continue-order"
+                disabled={!shipping}
                 size="lg"
                 variant="brand"
                 onClick={() => {
-                  setCurrentStep("fields");
+                  if (shipping) setCurrentStep("fields");
                 }}
               >
-                Finalizar mi pedido
+                {shipping ? "Finalizar mi pedido" : "Seleccioná una zona de envío"}
               </Button>
             </div>
           ) : null}

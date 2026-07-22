@@ -24,6 +24,7 @@ import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 import {Stepper} from "@/components/ui/stepper";
 
 import {getCartItemPrice} from "../utils";
+import {LEGACY_SHIPPING_OPTION_GROUP_TITLE} from "../shipping";
 
 function CartItemDrawer({
   item,
@@ -40,11 +41,13 @@ function CartItemDrawer({
   const options = useMemo(
     () =>
       item.options
-        ? Object.entries(item.options).map(([title, _options]) => ({
-            title,
-            condition: _options.condition,
-            options: _options.options,
-          }))
+        ? Object.entries(item.options)
+            .filter(([title]) => title !== LEGACY_SHIPPING_OPTION_GROUP_TITLE)
+            .map(([title, _options]) => ({
+              title,
+              condition: _options.condition,
+              options: _options.options,
+            }))
         : [],
     [item],
   );
@@ -136,6 +139,7 @@ function CartItemDrawer({
     if (!item.options) return true;
 
     return Object.entries(item.options).every(([categoryTitle, category]) => {
+      if (categoryTitle === LEGACY_SHIPPING_OPTION_GROUP_TITLE) return true;
       if (!category.condition) return true;
 
       const conditions = category.condition.split("||");
