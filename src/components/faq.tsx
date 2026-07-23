@@ -30,7 +30,7 @@ const FAQ_ITEMS = [
     question: "¿Cuáles son los métodos de pago?",
     answer: (
       <ul className="list-disc space-y-1 pl-4">
-        <li>Efectivo (5% OFF)</li>
+        <li>Efectivo (10% OFF)</li>
         <li>Transferencia bancaria</li>
         <li>Cuenta Dni (Tenes reintegro por cada compra)</li>
       </ul>
