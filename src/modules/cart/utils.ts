@@ -36,48 +36,67 @@ export function getCartTotal(cart: Cart): number {
   );
 }
 
+function hasQuantityCondition(condition?: string): boolean {
+  const conditions = condition?.split("||") || [];
+
+  return conditions.some((c) => c.match(/^[><=]?\d+$/));
+}
+
+// Stepper selections are stored as "Title x N" so the drawer can find the
+// existing entry by its title prefix (see CartItemDrawer#handleSelectOption).
+function formatOptionTitle(title: string): string {
+  const match = /^(.*) x (\d+)$/.exec(title);
+
+  return match ? `${match[1]} (x${match[2]})` : title;
+}
+
 export function getCartItemOptionsSummary(
   options: CartItem["options"],
 ): string {
-  return Object.entries(options!)
-    .reduce<string[]>(
-      (_options, [category, { options }]) =>
-        _options.concat(
-          `  • ${category}:\n    - ${options.map((opt) => opt.title).join("\n    - ")}`,
-        ),
-      [],
-    )
-    .join("\n");
+  const inlineOptions: string[] = [];
+  const sections: string[] = [];
+
+  Object.entries(options!).forEach(([category, group]) => {
+    const optionLines = group.options.map((opt) => `  • ${formatOptionTitle(opt.title)}`);
+
+    if (hasQuantityCondition(group.condition)) {
+      inlineOptions.push(...optionLines);
+    } else {
+      sections.push(`${category}:\n${optionLines.join("\n")}`);
+    }
+  });
+
+  return [inlineOptions.join("\n"), ...sections].filter(Boolean).join("\n\n");
 }
 
 export function getCartMessage(cart: Cart, checkout: Checkout, shipping: ShippingZone | null): string {
   const items = Array.from(cart.values())
-    .map(
-      (item) =>
-        `• ${item.title}${item.quantity > 1 ? ` (X${item.quantity})` : ``} - ${parseCurrency(getCartItemPrice(item))}${
-          item.options && Object.keys(item.options).length > 0
-            ? `\n${getCartItemOptionsSummary(item.options)}`
-            : ``
-        }`,
-    )
+    .map((item) => {
+      const title = `${item.title}${item.quantity > 1 ? ` (X${item.quantity})` : ``} - ${parseCurrency(getCartItemPrice(item))}`;
+      const optionsSummary =
+        item.options && Object.keys(item.options).length > 0
+          ? getCartItemOptionsSummary(item.options)
+          : "";
+
+      return [title, optionsSummary].filter(Boolean).join("\n");
+    })
     .join("\n\n");
 
   const fields = Array.from(checkout.entries())
-    .map(([key, value]) => `• ${key}: ${value}`)
-    .join("\n");
+    .map(([key, value]) => `${key}:\n  • ${value}`)
+    .join("\n\n");
+
+  const shippingLine = shipping ? `Zona de entrega:\n  • ${shipping.title}` : "";
 
   const subtotal = getCartTotal(cart);
   const total = subtotal + (shipping?.price || 0);
-  const shippingLine = shipping
-    ? `\nCosto de envío (${shipping.title}): ${parseCurrency(shipping.price)}`
-    : "";
   const isCashPayment = Array.from(checkout.values()).some((value) =>
     value.toLowerCase().includes("efectivo"),
   );
-  const discountLine = isCashPayment
-    ? `\nTotal con 10% OFF en efectivo: ${parseCurrency(total * 0.9)}`
-    : "";
-  const summary = `\nSubtotal: ${parseCurrency(subtotal)}${shippingLine}\nTotal: ${parseCurrency(total)}${discountLine}`;
+  const finalTotal = isCashPayment
+    ? `Total con 10% OFF en efectivo: ${parseCurrency(total * 0.9)}`
+    : `Total: ${parseCurrency(total)}`;
+  const separator = "------------------------------";
 
-  return [items, fields, summary].filter(Boolean).join("\n\n");
+  return [items, fields, shippingLine, separator, finalTotal].filter(Boolean).join("\n\n");
 }
