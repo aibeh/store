@@ -83,13 +83,16 @@ function Fields({
   const isCashPayment = Boolean(paymentValue && normalize(paymentValue).includes("efectivo"));
   const discountedTotal = totalAmount * (1 - CASH_DISCOUNT_RATE);
 
-  // Show the shipping address before the payment method, regardless of the order in the sheet.
-  const orderedFields = [...fields].sort((a, b) => {
-    const aIsAddress = a.type === "text" && normalize(a.title).includes("direcci") ? 0 : 1;
-    const bIsAddress = b.type === "text" && normalize(b.title).includes("direcci") ? 0 : 1;
+  // Show the customer's name, then the shipping address, then everything else
+  // (payment method, etc.), regardless of the order in the sheet.
+  function getFieldPriority(field: Field): number {
+    if (field.type === "text" && normalize(field.title).includes("nombre")) return 0;
+    if (field.type === "text" && normalize(field.title).includes("direcci")) return 1;
 
-    return aIsAddress - bIsAddress;
-  });
+    return 2;
+  }
+
+  const orderedFields = [...fields].sort((a, b) => getFieldPriority(a) - getFieldPriority(b));
 
   return (
     <div className="flex flex-col gap-8">

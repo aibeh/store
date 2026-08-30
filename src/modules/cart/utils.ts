@@ -69,6 +69,82 @@ export function getCartItemOptionsSummary(
   return [inlineOptions.join("\n"), ...sections].filter(Boolean).join("\n\n");
 }
 
+export interface OrderPayload {
+  cliente: string | null;
+  items: {
+    producto: string;
+    cantidad: number;
+    precio: number;
+    viandas: {nombre: string; cantidad: number}[];
+    otrasElecciones: Record<string, string[]>;
+  }[];
+  metodoPago: string | null;
+  direccion: string | null;
+  zonaEntrega: string | null;
+  subtotal: number;
+  costoEnvio: number;
+  total: number;
+  totalConDescuentoEfectivo: number | null;
+}
+
+// Payload estructurado para mandar a un endpoint (Apps Script en producción)
+// que anote el pedido automáticamente, en paralelo al link de WhatsApp.
+export function getOrderPayload(cart: Cart, checkout: Checkout, shipping: ShippingZone | null): OrderPayload {
+  const items = Array.from(cart.values()).map((item) => {
+    const viandas: {nombre: string; cantidad: number}[] = [];
+    const otrasElecciones: Record<string, string[]> = {};
+
+    Object.entries(item.options || {}).forEach(([category, group]) => {
+      if (hasQuantityCondition(group.condition)) {
+        group.options.forEach((opt) => {
+          const match = /^(.*) x (\d+)$/.exec(opt.title);
+
+          if (match) viandas.push({nombre: match[1], cantidad: parseInt(match[2], 10)});
+        });
+      } else {
+        otrasElecciones[category] = group.options.map((opt) => opt.title);
+      }
+    });
+
+    return {
+      producto: item.title,
+      cantidad: item.quantity,
+      precio: getCartItemPrice(item),
+      viandas,
+      otrasElecciones,
+    };
+  });
+
+  let cliente: string | null = null;
+  let direccion: string | null = null;
+  let metodoPago: string | null = null;
+
+  checkout.forEach((value, key) => {
+    const normalizedKey = key.toLowerCase();
+
+    if (normalizedKey.includes("nombre")) cliente = value;
+    else if (normalizedKey.includes("direcci")) direccion = value;
+    else if (normalizedKey.includes("pago")) metodoPago = value;
+  });
+
+  const subtotal = getCartTotal(cart);
+  const costoEnvio = shipping?.price || 0;
+  const total = subtotal + costoEnvio;
+  const isCashPayment = Boolean(metodoPago && metodoPago.toLowerCase().includes("efectivo"));
+
+  return {
+    cliente,
+    items,
+    metodoPago,
+    direccion,
+    zonaEntrega: shipping?.title || null,
+    subtotal,
+    costoEnvio,
+    total,
+    totalConDescuentoEfectivo: isCashPayment ? Math.round(total * 0.9) : null,
+  };
+}
+
 export function getCartMessage(cart: Cart, checkout: Checkout, shipping: ShippingZone | null): string {
   const items = Array.from(cart.values())
     .map((item) => {

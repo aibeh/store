@@ -64,12 +64,6 @@ const api = {
       });
     },
   },
-  mock: {
-    list: (mock: string): Promise<Field[]> =>
-      import(`./mocks/${mock}.json`).then((result: {default: RawField[]}) =>
-        normalize(result.default),
-      ),
-  },
 };
 
 export default api;

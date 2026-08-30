@@ -18,6 +18,7 @@ import {Button} from "@/components/ui/button";
 import WhatsappIcon from "@/components/icons/whatsapp";
 
 import {useCart} from "../../context/client";
+import {getOrderPayload} from "../../utils";
 
 import Details from "./Details";
 import Fields from "./Fields";
@@ -61,6 +62,28 @@ function CartDrawer({
 
   function handleUpdateField(id: string, value: string) {
     updateField(id, value);
+  }
+
+  // Invisible para el cliente: no cambia el redirect a WhatsApp ni lo demora,
+  // solo dispara en paralelo el registro del pedido en la planilla.
+  function logOrderInBackground() {
+    const url = process.env.NEXT_PUBLIC_ORDER_LOG_URL;
+
+    if (!url) return;
+
+    const payload = getOrderPayload(cart, checkout, shipping);
+
+    // mode "no-cors" + Content-Type "text/plain": Apps Script no responde con
+    // headers CORS, así que no podemos leer la respuesta (no la necesitamos).
+    // "text/plain" evita el preflight; Apps Script igual lee el JSON crudo
+    // desde e.postData.contents sin importar el Content-Type declarado.
+    fetch(url, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {"Content-Type": "text/plain;charset=utf-8"},
+      body: JSON.stringify(payload),
+      keepalive: true,
+    }).catch(() => {});
   }
 
   useEffect(() => {
@@ -157,6 +180,7 @@ function CartDrawer({
                 href={`https://wa.me/${store.phone}?text=${encodeURIComponent(message)}`}
                 rel="noopener noreferrer"
                 target="_blank"
+                onClick={logOrderInBackground}
               >
                 <Button
                   className="w-full"
