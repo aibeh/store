@@ -39,6 +39,7 @@ function CartDrawer({
     {removeItem, updateItem, updateField, updateShipping},
   ] = useCart();
   const [currentStep, setCurrentStep] = useState<"details" | "fields">("details");
+  const [showErrors, setShowErrors] = useState(false);
 
   function validateRequiredFields(): boolean {
     if (!fields) return true;
@@ -86,6 +87,17 @@ function CartDrawer({
     }).catch(() => {});
   }
 
+  function handleCompleteOrder(e: React.MouseEvent<HTMLAnchorElement>) {
+    if (!validateRequiredFields()) {
+      e.preventDefault();
+      setShowErrors(true);
+
+      return;
+    }
+
+    logOrderInBackground();
+  }
+
   useEffect(() => {
     if (!cart.size) {
       onClose();
@@ -120,6 +132,7 @@ function CartDrawer({
             <Fields
               checkout={checkout}
               fields={fields}
+              showErrors={showErrors}
               totalAmount={totalAmount}
               onChange={handleUpdateField}
             />
@@ -180,14 +193,13 @@ function CartDrawer({
                 href={`https://wa.me/${store.phone}?text=${encodeURIComponent(message)}`}
                 rel="noopener noreferrer"
                 target="_blank"
-                onClick={logOrderInBackground}
+                onClick={handleCompleteOrder}
               >
                 <Button
                   className="w-full"
                   data-testid="complete-order"
                   size="lg"
                   variant="brand"
-                  disabled={!validateRequiredFields()}
                 >
                   <div className="inline-flex items-center gap-2">
                     <WhatsappIcon />

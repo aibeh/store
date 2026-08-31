@@ -36,14 +36,20 @@ function RadioField({
   value,
   onChange,
   options,
+  isInvalid,
 }: {
   options: string[];
   onChange: (value: string) => void;
   value: string;
+  isInvalid?: boolean;
 }) {
   return (
     <RadioGroup value={value} onValueChange={onChange}>
-      <div className="flex flex-col gap-4">
+      <div
+        className={
+          isInvalid ? "flex flex-col gap-4 rounded-md border border-destructive p-3" : "flex flex-col gap-4"
+        }
+      >
         {options.map((option) => (
           <div key={option} className="flex items-start gap-x-3">
             <RadioGroupItem className="mt-1" id={option} value={option}>
@@ -69,11 +75,13 @@ function Fields({
   fields,
   checkout,
   totalAmount,
+  showErrors,
   onChange,
 }: {
   fields: Field[];
   checkout: Checkout;
   totalAmount: number;
+  showErrors: boolean;
   onChange: (id: string, value: string) => void;
 }) {
   const paymentField = fields.find(
@@ -96,14 +104,23 @@ function Fields({
 
   return (
     <div className="flex flex-col gap-8">
-      {orderedFields.map((field) => (
+      {orderedFields.map((field) => {
+        const value = checkout.get(field.title) || "";
+        // "Dirección" muestra el aviso de obligatoriedad (lo dice su título)
+        // aunque no bloquee el envío: muchos clientes recurrentes no la
+        // completan porque ya tenemos su dirección cargada de pedidos previos.
+        const isVisuallyRequired = field.required || normalize(field.title).includes("obligatorio");
+        const isInvalid = showErrors && isVisuallyRequired && !value.trim();
+
+        return (
         <div key={field.title} className="flex flex-col gap-4">
           <p className="text-lg font-medium">{field.title}</p>
           <div className="flex flex-col gap-4">
             {field.type === "text" && (
               <TextField
                 placeholder={field.placeholder}
-                value={checkout.get(field.title) || ""}
+                value={value}
+                className={isInvalid ? "border-destructive focus-visible:ring-destructive" : undefined}
                 onChange={(value: string) => {
                   onChange(field.title, value);
                 }}
@@ -112,12 +129,14 @@ function Fields({
             {field.type === "radio" && (
               <RadioField
                 options={field.options}
-                value={checkout.get(field.title) || ""}
+                value={value}
+                isInvalid={isInvalid}
                 onChange={(value: string) => {
                   onChange(field.title, value);
                 }}
               />
             )}
+            {isInvalid && <p className="text-sm font-medium text-destructive">Completá para finalizar</p>}
             {field.note ? <Alert>{field.note}</Alert> : null}
           </div>
           {Boolean(paymentValue) &&
@@ -142,7 +161,8 @@ function Fields({
               </div>
             ))}
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
