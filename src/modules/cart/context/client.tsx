@@ -24,6 +24,7 @@ interface Context {
     shipping: ShippingZone | null;
     quantity: number;
     message: string;
+    isStoreOpen: boolean;
   };
   actions: {
     addItem: (id: string, value: CartItem) => void;
@@ -61,6 +62,7 @@ function CartProviderClient({
     [cart],
   );
   const message = useMemo(() => getCartMessage(cart, checkout, shipping), [cart, checkout, shipping]);
+  const isStoreOpen = store.open !== "FALSE";
 
   useEffect(() => {
     if (!cart.size) {
@@ -116,8 +118,8 @@ function CartProviderClient({
   }, []);
 
   const state = useMemo(
-    () => ({checkout, cart, subtotal, total, totalAmount, shipping, quantity, message}),
-    [checkout, cart, subtotal, total, totalAmount, shipping, quantity, message],
+    () => ({checkout, cart, subtotal, total, totalAmount, shipping, quantity, message, isStoreOpen}),
+    [checkout, cart, subtotal, total, totalAmount, shipping, quantity, message, isStoreOpen],
   );
   const actions = useMemo(
     () => ({

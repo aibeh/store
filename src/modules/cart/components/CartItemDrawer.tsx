@@ -28,11 +28,13 @@ import {LEGACY_SHIPPING_OPTION_GROUP_TITLE} from "../shipping";
 
 function CartItemDrawer({
   item,
+  isStoreOpen,
   onClose,
   onSubmit,
   ...props
 }: ComponentProps<typeof Sheet> & {
   item: CartItem;
+  isStoreOpen: boolean;
   onClose: VoidFunction;
   onSubmit: (item: CartItem) => void;
 }) {
@@ -205,7 +207,16 @@ function CartItemDrawer({
                 {item.description}
               </SheetDescription>
             </div>
-            {Boolean(options.length) && (
+            {!isStoreOpen && Boolean(options.length) && (
+              <div className="flex w-full flex-col gap-4">
+                <p className="text-lg font-medium">{options[0].title}</p>
+                <div className="rounded-md border border-brand-500 bg-brand-50 p-4 text-sm font-medium">
+                  Ya cerramos los pedidos de esta semana! Volvemos el viernes con el nuevo menú 🙌 Te
+                  esperamos.
+                </div>
+              </div>
+            )}
+            {isStoreOpen && Boolean(options.length) && (
               <div className="flex flex-col gap-8">
                 {options.map((category) => {
                   return (
@@ -390,16 +401,20 @@ function CartItemDrawer({
             </div>
             <Button
               className="w-full"
-              disabled={!validateConditions()}
+              disabled={!isStoreOpen || !validateConditions()}
               size="lg"
               variant="brand"
               onClick={() => {
-                if (validateConditions()) {
+                if (isStoreOpen && validateConditions()) {
                   onSubmit(formData);
                 }
               }}
             >
-              {validateConditions() ? "Agregar al pedido" : "Complete las opciones requeridas"}
+              {!isStoreOpen
+                ? "No disponible esta semana"
+                : validateConditions()
+                  ? "Agregar al pedido"
+                  : "Complete las opciones requeridas"}
             </Button>
           </div>
         </SheetFooter>

@@ -48,6 +48,7 @@ const RootLayout = async ({children}: {children: React.ReactNode}) => {
   const store = await api.fetch();
   const products = await productApi.list();
   const weeklyMenu = getWeeklyMenu(products);
+  const isStoreOpen = store.open !== "FALSE";
 
   return (
     <html
@@ -62,7 +63,7 @@ const RootLayout = async ({children}: {children: React.ReactNode}) => {
             <header>
               <Header store={store} />
               <Hero store={store} />
-              <HowItWorks weeklyMenu={weeklyMenu} />
+              <HowItWorks isStoreOpen={isStoreOpen} weeklyMenu={weeklyMenu} />
             </header>
             <main
               className="relative flex flex-col gap-2 overflow-hidden border-t-2 border-foreground/20 px-4 pt-10"

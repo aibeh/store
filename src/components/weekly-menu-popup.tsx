@@ -3,7 +3,13 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import {X} from "lucide-react";
 
-export function WeeklyMenuPopup({items}: {items: string[]}) {
+export function WeeklyMenuPopup({
+  items,
+  isStoreOpen,
+}: {
+  items: string[];
+  isStoreOpen: boolean;
+}) {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
@@ -24,27 +30,40 @@ export function WeeklyMenuPopup({items}: {items: string[]}) {
                 <p className="font-heading text-3xl leading-none tracking-wide text-white">
                   Menú Semanal
                 </p>
-                <p className="mt-1 font-poppins text-[.65rem] uppercase tracking-[.12em] text-white/65">
-                  Tomamos pedidos de viernes a domingo
-                </p>
+                {isStoreOpen && (
+                  <p className="mt-1 font-poppins text-[.65rem] uppercase tracking-[.12em] text-white/65">
+                    Tomamos pedidos de viernes a domingo
+                  </p>
+                )}
               </div>
 
-              <div className="flex flex-col gap-3.5 px-5 pb-4 pt-5">
-                {items.map((title, index) => (
-                  <div key={title} className="flex items-start gap-3.5">
-                    <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-500 font-poppins text-sm font-bold text-white">
-                      {index + 1}
-                    </span>
-                    <p className="font-poppins text-sm font-bold leading-snug text-white">{title}</p>
+              {isStoreOpen ? (
+                <>
+                  <div className="flex flex-col gap-3.5 px-5 pb-4 pt-5">
+                    {items.map((title, index) => (
+                      <div key={title} className="flex items-start gap-3.5">
+                        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-500 font-poppins text-sm font-bold text-white">
+                          {index + 1}
+                        </span>
+                        <p className="font-poppins text-sm font-bold leading-snug text-white">{title}</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
 
-              <div className="my-3 text-center">
-                <span className="inline-flex items-center gap-1 rounded-full border border-[#f3a14b] bg-orange-50 px-3.5 py-1 font-poppins text-xs font-semibold text-[#c27a1e]">
-                  💵 10% OFF pagando en efectivo
-                </span>
-              </div>
+                  <div className="my-3 text-center">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-[#f3a14b] bg-orange-50 px-3.5 py-1 font-poppins text-xs font-semibold text-[#c27a1e]">
+                      💵 10% OFF pagando en efectivo
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center gap-2 px-5 py-8 text-center">
+                  <p className="max-w-[26ch] font-poppins text-sm font-bold leading-snug text-white">
+                    Ups... ¡Ya cerramos los pedidos para esta semana!
+                  </p>
+                  <p className="font-poppins text-sm text-white/70">¡En breve reabrimos, te esperamos!</p>
+                </div>
+              )}
               <p className="border-t border-white/10 px-5 pb-4 pt-3 text-center font-poppins text-[.6rem] font-bold uppercase tracking-[.2em] text-white/40">
                 Comer rico y sano, nunca fue tan fácil
               </p>

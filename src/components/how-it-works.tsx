@@ -23,7 +23,13 @@ const STEPS = [
   },
 ];
 
-export function HowItWorks({weeklyMenu}: {weeklyMenu: string[]}) {
+export function HowItWorks({
+  weeklyMenu,
+  isStoreOpen,
+}: {
+  weeklyMenu: string[];
+  isStoreOpen: boolean;
+}) {
   return (
     <section className="py-12">
       <div className="container mx-auto text-center">
@@ -58,7 +64,7 @@ export function HowItWorks({weeklyMenu}: {weeklyMenu: string[]}) {
 
         {Boolean(weeklyMenu.length) && (
           <div className="mt-10">
-            <WeeklyMenuPopup items={weeklyMenu} />
+            <WeeklyMenuPopup isStoreOpen={isStoreOpen} items={weeklyMenu} />
           </div>
         )}
       </div>

@@ -16,7 +16,7 @@ import {Toggle} from "@/components/ui/toggle";
 import CartItemDrawer from "@/modules/cart/components/CartItemDrawer";
 
 function StoreScreen({products, selected}: {products: Product[]; selected: null | Product}) {
-  const [, {addItem, openCart}] = useCart();
+  const [{isStoreOpen}, {addItem, openCart}] = useCart();
   const router = useRouter();
   const [query, setQuery] = useState<string>("");
   const [layout, setLayout] = useState<"list" | "grid">(() =>
@@ -170,6 +170,7 @@ function StoreScreen({products, selected}: {products: Product[]; selected: null 
       {Boolean(selected) && (
         <CartItemDrawer
           open
+          isStoreOpen={isStoreOpen}
           item={{...selected!, quantity: 1}}
           onClose={() => router.push("/", {scroll: false})}
           onSubmit={(item) => {
