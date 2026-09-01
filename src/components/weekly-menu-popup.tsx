@@ -59,9 +59,11 @@ export function WeeklyMenuPopup({
               ) : (
                 <div className="flex flex-col items-center gap-2 px-5 py-8 text-center">
                   <p className="max-w-[26ch] font-poppins text-sm font-bold leading-snug text-white">
-                    Ups... ¡Ya cerramos los pedidos para esta semana!
+                    Ups.. ¡Ya cerramos los pedidos para esta semana!
                   </p>
-                  <p className="font-poppins text-sm text-white/70">¡En breve reabrimos, te esperamos!</p>
+                  <p className="font-poppins text-sm text-white/70">
+                    Volvemos el viernes con el nuevo menú 🙌 Te esperamos
+                  </p>
                 </div>
               )}
               <p className="border-t border-white/10 px-5 pb-4 pt-3 text-center font-poppins text-[.6rem] font-bold uppercase tracking-[.2em] text-white/40">
