@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
   revalidateTag("fields");
   revalidateTag("products");
   revalidateTag("store");
+  revalidateTag("coupons");
 
   // Revalidate the layout for shared data between index and products
   revalidatePath("/", "layout");

@@ -7,9 +7,10 @@ import CartProviderClient from "./client";
 const CartProvider = async ({children}: {children: React.ReactNode}) => {
   const fields = await cartApi.field.list();
   const store = await storeApi.fetch();
+  const coupons = await cartApi.coupon.list();
 
   return (
-    <CartProviderClient fields={fields} store={store}>
+    <CartProviderClient coupons={coupons} fields={fields} store={store}>
       {children}
     </CartProviderClient>
   );

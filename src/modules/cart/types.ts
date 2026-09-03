@@ -37,3 +37,11 @@ export interface TextField {
 }
 
 export type Field = RadioField | TextField;
+
+export interface Coupon {
+  codigo: string;
+  pack5: number;
+  pack10: number;
+  pack15: number;
+  activo: boolean;
+}

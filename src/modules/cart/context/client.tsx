@@ -2,7 +2,7 @@
 
 import type {Store} from "~/store/types";
 
-import type {Cart, CartItem, Checkout, Field} from "../types";
+import type {Cart, CartItem, Checkout, Coupon, Field} from "../types";
 import type {ShippingZone} from "../shipping";
 
 import {useState, useMemo, useCallback, useContext, createContext, useEffect} from "react";
@@ -12,7 +12,7 @@ import {parseCurrency} from "~/currency/utils";
 import {Button} from "@/components/ui/button";
 
 import CartDrawer from "../components/CartDrawer";
-import {getCartMessage, getCartTotal} from "../utils";
+import {getCartMessage, getCartTotal, getPackSize} from "../utils";
 
 interface Context {
   state: {
@@ -25,6 +25,8 @@ interface Context {
     quantity: number;
     message: string;
     isStoreOpen: boolean;
+    appliedCoupon: Coupon | null;
+    couponError: string | null;
   };
   actions: {
     addItem: (id: string, value: CartItem) => void;
@@ -33,6 +35,7 @@ interface Context {
     updateField: (id: string, value: string) => void;
     updateShipping: (zone: ShippingZone | null) => void;
     openCart: () => void;
+    applyCoupon: (code: string) => void;
   };
 }
 
@@ -42,15 +45,19 @@ function CartProviderClient({
   fields,
   children,
   store,
+  coupons,
 }: {
   fields: Field[];
   children: React.ReactNode;
   store: Store;
+  coupons: Coupon[];
 }) {
   const [checkout, setCheckout] = useState<Checkout>(() => new Map());
   const [cart, setCart] = useState<Cart>(() => new Map());
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [shipping, setShipping] = useState<ShippingZone | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
   const subtotal = useMemo(() => parseCurrency(getCartTotal(cart)), [cart]);
   const totalAmount = useMemo(
     () => getCartTotal(cart) + (shipping?.price || 0),
@@ -61,12 +68,17 @@ function CartProviderClient({
     () => Array.from(cart.values()).reduce((acc, item) => acc + item.quantity, 0),
     [cart],
   );
-  const message = useMemo(() => getCartMessage(cart, checkout, shipping), [cart, checkout, shipping]);
+  const message = useMemo(
+    () => getCartMessage(cart, checkout, shipping, appliedCoupon),
+    [cart, checkout, shipping, appliedCoupon],
+  );
   const isStoreOpen = store.open !== "FALSE";
 
   useEffect(() => {
     if (!cart.size) {
       setShipping(null);
+      setAppliedCoupon(null);
+      setCouponError(null);
     }
   }, [cart.size]);
 
@@ -117,9 +129,68 @@ function CartProviderClient({
     setShipping(zone);
   }, []);
 
+  const applyCoupon = useCallback(
+    (code: string) => {
+      const trimmed = code.trim();
+
+      if (!trimmed) {
+        setAppliedCoupon(null);
+        setCouponError(null);
+
+        return;
+      }
+
+      const match = coupons.find(
+        (coupon) => coupon.activo && coupon.codigo.toLowerCase() === trimmed.toLowerCase(),
+      );
+
+      if (!match) {
+        setAppliedCoupon(null);
+        setCouponError("Cupón inválido o vencido");
+
+        return;
+      }
+
+      if (getPackSize(cart) === null) {
+        setAppliedCoupon(null);
+        setCouponError("Agregá un pack de viandas para usar este cupón");
+
+        return;
+      }
+
+      setAppliedCoupon(match);
+      setCouponError(null);
+    },
+    [coupons, cart],
+  );
+
   const state = useMemo(
-    () => ({checkout, cart, subtotal, total, totalAmount, shipping, quantity, message, isStoreOpen}),
-    [checkout, cart, subtotal, total, totalAmount, shipping, quantity, message, isStoreOpen],
+    () => ({
+      checkout,
+      cart,
+      subtotal,
+      total,
+      totalAmount,
+      shipping,
+      quantity,
+      message,
+      isStoreOpen,
+      appliedCoupon,
+      couponError,
+    }),
+    [
+      checkout,
+      cart,
+      subtotal,
+      total,
+      totalAmount,
+      shipping,
+      quantity,
+      message,
+      isStoreOpen,
+      appliedCoupon,
+      couponError,
+    ],
   );
   const actions = useMemo(
     () => ({
@@ -129,8 +200,9 @@ function CartProviderClient({
       updateField,
       updateShipping,
       openCart,
+      applyCoupon,
     }),
-    [removeItem, updateItem, addItem, updateField, updateShipping, openCart],
+    [removeItem, updateItem, addItem, updateField, updateShipping, openCart, applyCoupon],
   );
 
   return (

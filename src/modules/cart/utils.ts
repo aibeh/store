@@ -1,7 +1,29 @@
-import type { Cart, CartItem, Checkout } from "./types";
+import type { Cart, CartItem, Checkout, Coupon } from "./types";
 import type { ShippingZone } from "./shipping";
 
 import { parseCurrency } from "~/currency/utils";
+
+// Detecta el tamaño del pack de viandas en el carrito (5, 10 o 15), para
+// saber cuántas viandas congeladas de regalo corresponden con un cupón.
+export function getPackSize(cart: Cart): 5 | 10 | 15 | null {
+  for (const item of Array.from(cart.values())) {
+    const match = /pack de (5|10|15)\s*viandas/i.exec(item.title);
+
+    if (match) return Number(match[1]) as 5 | 10 | 15;
+  }
+
+  return null;
+}
+
+export function getCouponGiftQuantity(coupon: Coupon, cart: Cart): number {
+  const packSize = getPackSize(cart);
+
+  if (packSize === 5) return coupon.pack5;
+  if (packSize === 10) return coupon.pack10;
+  if (packSize === 15) return coupon.pack15;
+
+  return 0;
+}
 
 export function getCartItemPrice(item: CartItem): number {
   // Start with base price multiplied by quantity
@@ -85,11 +107,17 @@ export interface OrderPayload {
   costoEnvio: number;
   total: number;
   totalConDescuentoEfectivo: number | null;
+  cupon: {codigo: string; viandasRegalo: number} | null;
 }
 
 // Payload estructurado para mandar a un endpoint (Apps Script en producción)
 // que anote el pedido automáticamente, en paralelo al link de WhatsApp.
-export function getOrderPayload(cart: Cart, checkout: Checkout, shipping: ShippingZone | null): OrderPayload {
+export function getOrderPayload(
+  cart: Cart,
+  checkout: Checkout,
+  shipping: ShippingZone | null,
+  coupon: Coupon | null,
+): OrderPayload {
   const items = Array.from(cart.values()).map((item) => {
     const viandas: {nombre: string; cantidad: number}[] = [];
     const otrasElecciones: Record<string, string[]> = {};
@@ -142,10 +170,16 @@ export function getOrderPayload(cart: Cart, checkout: Checkout, shipping: Shippi
     costoEnvio,
     total,
     totalConDescuentoEfectivo: isCashPayment ? Math.round(total * 0.9) : null,
+    cupon: coupon ? {codigo: coupon.codigo, viandasRegalo: getCouponGiftQuantity(coupon, cart)} : null,
   };
 }
 
-export function getCartMessage(cart: Cart, checkout: Checkout, shipping: ShippingZone | null): string {
+export function getCartMessage(
+  cart: Cart,
+  checkout: Checkout,
+  shipping: ShippingZone | null,
+  coupon: Coupon | null,
+): string {
   const items = Array.from(cart.values())
     .map((item) => {
       const title = `${item.title}${item.quantity > 1 ? ` (X${item.quantity})` : ``} - ${parseCurrency(getCartItemPrice(item))}`;
@@ -157,6 +191,11 @@ export function getCartMessage(cart: Cart, checkout: Checkout, shipping: Shippin
       return [title, optionsSummary].filter(Boolean).join("\n");
     })
     .join("\n\n");
+
+  const giftQuantity = coupon ? getCouponGiftQuantity(coupon, cart) : 0;
+  const couponLine = giftQuantity
+    ? `🎁 Cupón ${coupon!.codigo}: +${giftQuantity} vianda${giftQuantity > 1 ? "s" : ""} congelada${giftQuantity > 1 ? "s" : ""} de regalo`
+    : "";
 
   const fields = Array.from(checkout.entries())
     .map(([key, value]) => `${key}:\n  • ${value}`)
@@ -174,5 +213,7 @@ export function getCartMessage(cart: Cart, checkout: Checkout, shipping: Shippin
     : `Total: ${parseCurrency(total)}`;
   const separator = "------------------------------";
 
-  return [items, fields, shippingLine, separator, finalTotal].filter(Boolean).join("\n\n");
+  return [items, couponLine, fields, shippingLine, separator, finalTotal]
+    .filter(Boolean)
+    .join("\n\n");
 }

@@ -1,4 +1,4 @@
-import type {Field, RadioField, TextField} from "./types";
+import type {Coupon, Field, RadioField, TextField} from "./types";
 
 import Papa from "papaparse";
 
@@ -8,6 +8,26 @@ interface RawField {
   text: string;
   note: string;
   required: string;
+}
+
+interface RawCoupon {
+  "código": string;
+  "pack 5": string;
+  "pack 10": string;
+  "pack 15": string;
+  activo: string;
+}
+
+function normalizeCoupons(data: RawCoupon[]): Coupon[] {
+  return data
+    .filter((coupon) => coupon["código"] && coupon["código"].trim())
+    .map((coupon) => ({
+      codigo: coupon["código"].trim(),
+      pack5: parseInt(coupon["pack 5"], 10) || 0,
+      pack10: parseInt(coupon["pack 10"], 10) || 0,
+      pack15: parseInt(coupon["pack 15"], 10) || 0,
+      activo: coupon.activo === "TRUE",
+    }));
 }
 
 function normalize(data: RawField[]): Field[] {
@@ -58,6 +78,23 @@ const api = {
 
               return resolve(data);
             },
+            error: (error: Error) => reject(error.message),
+          });
+        });
+      });
+    },
+  },
+  coupon: {
+    list: async (): Promise<Coupon[]> => {
+      if (!process.env.COUPONS) return [];
+
+      return fetch(process.env.COUPONS, {next: {tags: ["coupons"]}}).then(async (response) => {
+        const csv = await response.text();
+
+        return new Promise<Coupon[]>((resolve, reject) => {
+          Papa.parse(csv, {
+            header: true,
+            complete: (results) => resolve(normalizeCoupons(results.data as RawCoupon[])),
             error: (error: Error) => reject(error.message),
           });
         });

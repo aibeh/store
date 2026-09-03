@@ -18,8 +18,9 @@ import {Button} from "@/components/ui/button";
 import WhatsappIcon from "@/components/icons/whatsapp";
 
 import {useCart} from "../../context/client";
-import {getOrderPayload} from "../../utils";
+import {getCouponGiftQuantity, getOrderPayload} from "../../utils";
 
+import Coupon from "./Coupon";
 import Details from "./Details";
 import Fields from "./Fields";
 import Shipping from "./Shipping";
@@ -35,8 +36,8 @@ function CartDrawer({
   onClose: VoidFunction;
 }) {
   const [
-    {subtotal, total, totalAmount, shipping, message, cart, checkout},
-    {removeItem, updateItem, updateField, updateShipping},
+    {subtotal, total, totalAmount, shipping, message, cart, checkout, appliedCoupon, couponError},
+    {removeItem, updateItem, updateField, updateShipping, applyCoupon},
   ] = useCart();
   const [currentStep, setCurrentStep] = useState<"details" | "fields">("details");
   const [showErrors, setShowErrors] = useState(false);
@@ -72,7 +73,7 @@ function CartDrawer({
 
     if (!url) return;
 
-    const payload = getOrderPayload(cart, checkout, shipping);
+    const payload = getOrderPayload(cart, checkout, shipping, appliedCoupon);
 
     // mode "no-cors" + Content-Type "text/plain": Apps Script no responde con
     // headers CORS, así que no podemos leer la respuesta (no la necesitamos).
@@ -143,6 +144,12 @@ function CartDrawer({
           {fields && currentStep === "details" ? (
             <div className="flex w-full flex-col gap-4">
               <hr />
+              <Coupon
+                appliedCoupon={appliedCoupon}
+                couponError={couponError}
+                giftQuantity={appliedCoupon ? getCouponGiftQuantity(appliedCoupon, cart) : 0}
+                onApply={applyCoupon}
+              />
               <div className="flex items-center justify-between gap-2 text-lg font-medium">
                 <p>Total</p>
                 <p>{total}</p>
