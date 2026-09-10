@@ -27,7 +27,7 @@ const inter = Inter({
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
-  variable: "--font-poppins",
+  variable: "--font-poppins-family",
 });
 const bebasNeue = Bebas_Neue({subsets: ["latin"], weight: "400", variable: "--font-bebas"});
 const dancingScript = Dancing_Script({subsets: ["latin"], weight: "400", variable: "--font-dancing"});
@@ -59,7 +59,7 @@ const RootLayout = async ({children}: {children: React.ReactNode}) => {
       <head />
       <body className="font-sans antialiased">
         <ThemeProvider>
-          <div className="m-auto flex max-w-screen-xl flex-col rounded-sm">
+          <div className="m-auto flex max-w-7xl flex-col rounded-sm">
             <header>
               <Header store={store} />
               <Hero store={store} />

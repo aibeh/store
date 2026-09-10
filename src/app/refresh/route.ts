@@ -11,10 +11,10 @@ export async function GET(request: NextRequest) {
   }
 
   // Revalidate all used tags
-  revalidateTag("fields");
-  revalidateTag("products");
-  revalidateTag("store");
-  revalidateTag("coupons");
+  revalidateTag("fields", "max");
+  revalidateTag("products", "max");
+  revalidateTag("store", "max");
+  revalidateTag("coupons", "max");
 
   // Revalidate the layout for shared data between index and products
   revalidatePath("/", "layout");
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   const products = await api.list();
 
   for (const product of products) {
-    revalidatePath(`/${product.id}`, "layout")
+    revalidatePath(`/${product.id}`, "layout");
   }
 
   return NextResponse.json({revalidated: true});
