@@ -25,6 +25,13 @@ export function getCouponGiftQuantity(coupon: Coupon, cart: Cart): number {
   return 0;
 }
 
+// El nombre del regalo (ej: "vianda congelada" / "barrita sorpresa") sale de
+// la planilla de Cupones, así cada cupón puede regalar algo distinto sin
+// tocar código.
+export function getCouponGiftLabel(coupon: Coupon, quantity: number): string {
+  return quantity === 1 ? coupon.regaloSingular : coupon.regaloPlural;
+}
+
 export function getCartItemPrice(item: CartItem): number {
   // Start with base price multiplied by quantity
   let total = item.price * item.quantity;
@@ -107,7 +114,7 @@ export interface OrderPayload {
   costoEnvio: number;
   total: number;
   totalConDescuentoEfectivo: number | null;
-  cupon: {codigo: string; viandasRegalo: number} | null;
+  cupon: {codigo: string; cantidadRegalo: number; regalo: string} | null;
 }
 
 // Payload estructurado para mandar a un endpoint (Apps Script en producción)
@@ -170,7 +177,17 @@ export function getOrderPayload(
     costoEnvio,
     total,
     totalConDescuentoEfectivo: isCashPayment ? Math.round(total * 0.9) : null,
-    cupon: coupon ? {codigo: coupon.codigo, viandasRegalo: getCouponGiftQuantity(coupon, cart)} : null,
+    cupon: coupon
+      ? (() => {
+          const cantidadRegalo = getCouponGiftQuantity(coupon, cart);
+
+          return {
+            codigo: coupon.codigo,
+            cantidadRegalo,
+            regalo: getCouponGiftLabel(coupon, cantidadRegalo),
+          };
+        })()
+      : null,
   };
 }
 
@@ -193,9 +210,10 @@ export function getCartMessage(
     .join("\n\n");
 
   const giftQuantity = coupon ? getCouponGiftQuantity(coupon, cart) : 0;
-  const couponLine = giftQuantity
-    ? `🎁 Cupón ${coupon!.codigo}: +${giftQuantity} vianda${giftQuantity > 1 ? "s" : ""} congelada${giftQuantity > 1 ? "s" : ""} de regalo`
-    : "";
+  const couponLine =
+    coupon && giftQuantity
+      ? `🎁 Cupón ${coupon.codigo}: +${giftQuantity} ${getCouponGiftLabel(coupon, giftQuantity)} de regalo`
+      : "";
 
   const fields = Array.from(checkout.entries())
     .map(([key, value]) => `${key}:\n  • ${value}`)

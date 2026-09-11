@@ -16,6 +16,8 @@ interface RawCoupon {
   "pack 10": string;
   "pack 15": string;
   activo: string;
+  "regalo singular": string;
+  "regalo plural": string;
 }
 
 function normalizeCoupons(data: RawCoupon[]): Coupon[] {
@@ -27,6 +29,8 @@ function normalizeCoupons(data: RawCoupon[]): Coupon[] {
       pack10: parseInt(coupon["pack 10"], 10) || 0,
       pack15: parseInt(coupon["pack 15"], 10) || 0,
       activo: coupon.activo === "TRUE",
+      regaloSingular: (coupon["regalo singular"] || "vianda congelada").trim(),
+      regaloPlural: (coupon["regalo plural"] || "viandas congeladas").trim(),
     }));
 }
 

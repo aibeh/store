@@ -44,4 +44,6 @@ export interface Coupon {
   pack10: number;
   pack15: number;
   activo: boolean;
+  regaloSingular: string;
+  regaloPlural: string;
 }
