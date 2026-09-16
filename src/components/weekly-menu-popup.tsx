@@ -1,6 +1,6 @@
 "use client";
 
-import {Dialog} from "@base-ui/react/dialog";
+import * as Dialog from "@radix-ui/react-dialog";
 import {X} from "lucide-react";
 
 export function WeeklyMenuPopup({
@@ -12,15 +12,17 @@ export function WeeklyMenuPopup({
 }) {
   return (
     <Dialog.Root>
-      <Dialog.Trigger className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-8 py-3 font-poppins text-sm font-semibold text-white/90 shadow-lg transition hover:bg-brand-600">
+      <Dialog.Trigger asChild>
+        <button className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-8 py-3 font-poppins text-sm font-semibold text-white/90 shadow-lg transition hover:bg-brand-600">
           🥗 Conocé el menú de esta semana
+        </button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-[300] bg-black/70 data-open:animate-in data-ending-style:animate-out data-ending-style:fade-out-0 data-open:fade-in-0" />
-        <Dialog.Popup className="fixed left-1/2 top-1/2 z-[300] w-[calc(100%-2rem)] max-w-[420px] -translate-x-1/2 -translate-y-1/2 data-open:animate-in data-ending-style:animate-out data-ending-style:fade-out-0 data-open:fade-in-0 data-ending-style:zoom-out-95 data-open:zoom-in-95">
+        <Dialog.Overlay className="fixed inset-0 z-[300] bg-black/70 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-[300] w-[calc(100%-2rem)] max-w-[420px] -translate-x-1/2 -translate-y-1/2 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
           <Dialog.Title className="sr-only">Menú semanal</Dialog.Title>
           <div className="relative">
-            <Dialog.Close aria-label="Cerrar menú" className="absolute -right-3.5 -top-3.5 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white text-foreground shadow-lg transition hover:bg-secondary">
+            <Dialog.Close className="absolute -right-3.5 -top-3.5 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white text-foreground shadow-lg transition hover:bg-secondary">
               <X className="h-4 w-4" />
             </Dialog.Close>
             <div className="max-h-[88vh] overflow-y-auto rounded-2xl bg-[#1a1a1a] shadow-[0_24px_60px_rgba(0,0,0,.6)] [scrollbar-width:none]">
@@ -72,7 +74,7 @@ export function WeeklyMenuPopup({
               Tocá fuera de la tarjeta para cerrar
             </p>
           </div>
-        </Dialog.Popup>
+        </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
   );

@@ -154,13 +154,13 @@ export function getOrderPayload(
   let direccion: string | null = null;
   let metodoPago: string | null = null;
 
-  for (const [key, value] of checkout) {
+  checkout.forEach((value, key) => {
     const normalizedKey = key.toLowerCase();
 
     if (normalizedKey.includes("nombre")) cliente = value;
     else if (normalizedKey.includes("direcci")) direccion = value;
     else if (normalizedKey.includes("pago")) metodoPago = value;
-  }
+  });
 
   const subtotal = getCartTotal(cart);
   const costoEnvio = shipping?.price || 0;

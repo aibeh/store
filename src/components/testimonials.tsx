@@ -128,7 +128,7 @@ export function Testimonials() {
         <div className="mt-4 flex items-center justify-center gap-3">
           <button
             aria-label="Ver testimonios anteriores"
-            className="flex h-9 w-9 items-center justify-center rounded-full border bg-background shadow-xs hover:bg-secondary"
+            className="flex h-9 w-9 items-center justify-center rounded-full border bg-background shadow-sm hover:bg-secondary"
             onClick={() => {
               scrollByCard(-1);
             }}
@@ -137,7 +137,7 @@ export function Testimonials() {
           </button>
           <button
             aria-label="Ver más testimonios"
-            className="flex h-9 w-9 items-center justify-center rounded-full border bg-background shadow-xs hover:bg-secondary"
+            className="flex h-9 w-9 items-center justify-center rounded-full border bg-background shadow-sm hover:bg-secondary"
             onClick={() => {
               scrollByCard(1);
             }}

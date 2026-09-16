@@ -4,14 +4,14 @@ import api from "~/product/api";
 
 import StoreScreen from "@/modules/store/screens/Store";
 
-
+export const dynamic = "force-static";
 
 export async function generateStaticParams() {
   const products = await api.list();
 
   return [
     // Build index for the home page...
-    {product: []},
+    {product: undefined},
     // ...and for each product
     ...products.map((product) => ({product: [product.id]})),
   ];

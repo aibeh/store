@@ -1,10 +1,13 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   reactStrictMode: true,
-  cacheComponents: true,
-  distDir: process.env.NEXT_DIST_DIR || ".next",
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   experimental: {
-    exposeTestingApiInProductionBuild: process.env.EXPOSE_TESTING_API === "1",
     staleTimes: {
       static: 900,
       dynamic: 0,

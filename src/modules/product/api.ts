@@ -1,7 +1,6 @@
 import type {Option as IOption, Product as IProduct} from "./types";
 
 import Papa from "papaparse";
-import {cacheLife, cacheTag} from "next/cache";
 import {notFound} from "next/navigation";
 
 interface RawOption {
@@ -142,10 +141,7 @@ function normalize(data: (RawProduct | RawOption | RawUnknown)[]) {
 
 const api = {
   list: async (): Promise<IProduct[]> => {
-    "use cache";
-    cacheLife("max");
-    cacheTag("products");
-    return fetch(process.env.PRODUCTS!).then(async (response) => {
+    return fetch(process.env.PRODUCTS!, {next: {tags: ["products"]}}).then(async (response) => {
       const csv = await response.text();
 
       return new Promise<IProduct[]>((resolve, reject) => {

@@ -7,10 +7,6 @@
 
 # testing
 /coverage
-/playwright-report/
-/test-results/
-/.next-e2e/
-*.tsbuildinfo
 
 # next.js
 /.next/
