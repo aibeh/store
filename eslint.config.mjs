@@ -21,6 +21,9 @@ export default defineConfig([
     "**/coverage/**",
     "**/.idea/**",
     "**/.next/**",
+    "**/.next-e2e/**",
+    "playwright-report/**",
+    "test-results/**",
     "**/.vscode/**",
     "**/build/**",
     "out/**",
@@ -30,7 +33,7 @@ export default defineConfig([
     "next-env.d.ts",
   ]),
   {
-    files: ["**/*.{js,cjs,mjs,ts,tsx}"],
+    files: ["**/*.{js,cjs,mjs,ts,mts,tsx}"],
     extends: [js.configs.recommended],
     languageOptions: {
       ecmaVersion: "latest",
@@ -73,13 +76,13 @@ export default defineConfig([
     },
   },
   {
-    files: ["*.{js,cjs,mjs}", "cypress/plugins/**/*.js"],
+    files: ["*.{js,cjs,mjs,ts,mts}", "tests/**/*.{ts,mjs}"],
     languageOptions: {
       globals: globals.node,
     },
   },
   {
-    files: ["*.config.js", "cypress/plugins/**/*.js"],
+    files: ["*.config.js"],
     languageOptions: {
       sourceType: "commonjs",
     },
@@ -91,7 +94,7 @@ export default defineConfig([
     },
   },
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ["**/*.{ts,mts,tsx}"],
     ignores: ["cypress/**"],
     extends: [
       tseslint.configs["flat/strict-type-checked"],

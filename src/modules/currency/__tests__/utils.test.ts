@@ -1,3 +1,5 @@
+import {describe, expect, test, it} from "vitest";
+
 import {parseCurrency} from "../utils";
 
 describe("currency", () => {

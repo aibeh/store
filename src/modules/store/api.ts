@@ -1,10 +1,14 @@
 import type {Store as IStore} from "./types";
 
 import Papa from "papaparse";
+import {cacheLife, cacheTag} from "next/cache";
 
 export default {
   fetch: async (): Promise<IStore> => {
-    return fetch(process.env.STORE!, {next: {tags: ["store"]}}).then(async (response) => {
+    "use cache";
+    cacheLife("max");
+    cacheTag("store");
+    return fetch(process.env.STORE!).then(async (response) => {
       const csv = await response.text();
 
       return new Promise<IStore>((resolve, reject) => {

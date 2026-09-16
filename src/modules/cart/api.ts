@@ -1,6 +1,7 @@
 import type {Coupon, Field, RadioField, TextField} from "./types";
 
 import Papa from "papaparse";
+import {cacheLife, cacheTag} from "next/cache";
 
 interface RawField {
   title: string;
@@ -67,7 +68,10 @@ function normalize(data: RawField[]): Field[] {
 const api = {
   field: {
     list: async (): Promise<Field[]> => {
-      return fetch(process.env.FIELDS!, {next: {tags: ["fields"]}}).then(async (response) => {
+    "use cache";
+    cacheLife("max");
+    cacheTag("fields");
+      return fetch(process.env.FIELDS!).then(async (response) => {
         const csv = await response.text();
 
         return new Promise<Field[]>((resolve, reject) => {
@@ -86,9 +90,12 @@ const api = {
   },
   coupon: {
     list: async (): Promise<Coupon[]> => {
+    "use cache";
+    cacheLife("max");
+    cacheTag("coupons");
       if (!process.env.COUPONS) return [];
 
-      return fetch(process.env.COUPONS, {next: {tags: ["coupons"]}}).then(async (response) => {
+      return fetch(process.env.COUPONS).then(async (response) => {
         const csv = await response.text();
 
         return new Promise<Coupon[]>((resolve, reject) => {

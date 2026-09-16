@@ -107,7 +107,7 @@ function CartDrawer({
 
   return (
     <Sheet open onOpenChange={(_isOpen) => !_isOpen && onClose()} {...props}>
-      <SheetContent className="grid grid-cols-1 grid-rows-[auto_1fr_auto] overflow-hidden">
+      <SheetContent showCloseButton={false} className="grid grid-cols-1 grid-rows-[auto_1fr_auto] overflow-hidden">
         <Image
           src="/assets/order-bg-deco.webp"
           alt=""
@@ -116,7 +116,7 @@ function CartDrawer({
           className="pointer-events-none absolute inset-0 -z-10 select-none object-cover opacity-[0.04] mix-blend-multiply"
         />
         <SheetHeader>
-          <SheetClose className="-mx-6 ml-auto h-12 w-14 rounded-l-lg border border-border bg-background py-2 pl-2 pr-4 shadow-lg">
+          <SheetClose aria-label="Cerrar" className="-mx-6 ml-auto h-12 w-14 rounded-l-lg border border-border bg-background py-2 pl-2 pr-4 shadow-lg">
             <X className="h-8 w-8" />
           </SheetClose>
           <SheetTitle className="text-left text-2xl font-medium">Tu pedido</SheetTitle>

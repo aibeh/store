@@ -1,3 +1,5 @@
+import {describe, expect, test, it} from "vitest";
+
 import type {CartItem} from "../types";
 
 import {getCartItemOptionsSummary, getCartItemPrice, getCartMessage, getCartTotal} from "../utils";

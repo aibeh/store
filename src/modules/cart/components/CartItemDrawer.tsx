@@ -182,9 +182,9 @@ function CartItemDrawer({
 
   return (
     <Sheet open={props.open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <SheetContent className="grid grid-rows-[auto_1fr_auto]">
+      <SheetContent showCloseButton={false} className="grid grid-rows-[auto_1fr_auto]">
         <SheetHeader>
-          <SheetClose className="z-20 -mx-6 ml-auto h-12 w-14 rounded-l-lg border border-border bg-background py-2 pl-2 pr-4 shadow-lg">
+          <SheetClose aria-label="Cerrar" className="z-20 -mx-6 ml-auto h-12 w-14 rounded-l-lg border border-border bg-background py-2 pl-2 pr-4 shadow-lg">
             <X className="h-8 w-8" />
           </SheetClose>
         </SheetHeader>
