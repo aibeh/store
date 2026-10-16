@@ -6,7 +6,11 @@ import {ImageOff} from "lucide-react";
 
 import {parseCurrency} from "~/currency/utils";
 
+const CASH_DISCOUNT_RATE = 0.1;
+
 function ProductCard({product}: {product: Product}) {
+  const cashPrice = Math.round(product.price * (1 - CASH_DISCOUNT_RATE));
+
   return (
     <div
       key={product.id}
@@ -21,22 +25,34 @@ function ProductCard({product}: {product: Product}) {
               {product.description}
             </p>
           </div>
-          <div className="flex items-end">
-            <p className="text-sm font-medium text-incentive">{parseCurrency(product.price)}</p>
+          <div className="flex flex-col items-start gap-0.5">
+            <p className="text-sm">
+              <span className="font-medium text-foreground">{parseCurrency(product.price)}</span>{" "}
+              <span className="text-xs text-muted-foreground">Transferencia</span>
+            </p>
+            <p className="text-sm">
+              <span className="font-semibold text-incentive">{parseCurrency(cashPrice)}</span>{" "}
+              <span className="text-xs font-medium text-incentive">Efectivo</span>
+            </p>
           </div>
         </div>
-        {product.image ? (
-          <img
-            alt={product.title}
-            className="aspect-square h-24 w-24 min-w-24 rounded-md bg-muted/50 object-cover sm:h-36 sm:w-36 sm:min-w-36"
-            loading="lazy"
-            src={product.image}
-          />
-        ) : (
-          <div className="flex aspect-square h-24 w-24 min-w-24 items-center justify-center rounded-md bg-muted/50 object-cover sm:h-36 sm:w-36 sm:min-w-36">
-            <ImageOff className="m-auto h-12 w-12 opacity-10 sm:h-16 sm:w-16" />
-          </div>
-        )}
+        <div className="relative h-24 w-24 min-w-24 sm:h-36 sm:w-36 sm:min-w-36">
+          {product.image ? (
+            <img
+              alt={product.title}
+              className="aspect-square h-full w-full rounded-md bg-muted/50 object-cover"
+              loading="lazy"
+              src={product.image}
+            />
+          ) : (
+            <div className="flex aspect-square h-full w-full items-center justify-center rounded-md bg-muted/50">
+              <ImageOff className="m-auto h-12 w-12 opacity-10 sm:h-16 sm:w-16" />
+            </div>
+          )}
+          <span className="absolute left-1.5 top-1.5 rounded-md bg-green-700 px-1.5 py-0.5 text-[11px] font-semibold leading-tight text-white">
+            -10%
+          </span>
+        </div>
       </div>
     </div>
   );
