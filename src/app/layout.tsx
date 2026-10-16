@@ -35,12 +35,32 @@ const dancingScript = Dancing_Script({subsets: ["latin"], weight: "400", variabl
 export async function generateMetadata(): Promise<Metadata> {
   const store = await api.fetch();
 
+  const shareTitle = "AIBEH - Viandas saludables";
+  const shareDescription =
+    "Tu semana resuelta. Comer bien sin cocinar es posible. Elegí tus opciones favoritas del menú semanal y nosotros nos encargamos del resto.";
+
   return {
+    metadataBase: new URL("https://www.somosaibeh.com"),
     title: {
       template: `${store.title} - %s`,
       default: store.title,
     },
     description: store.subtitle,
+    openGraph: {
+      type: "website",
+      locale: "es_AR",
+      url: "https://www.somosaibeh.com",
+      siteName: "AIBEH",
+      title: shareTitle,
+      description: shareDescription,
+      images: [{url: "/assets/og-image.jpg", width: 1200, height: 630, alt: shareTitle}],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: shareTitle,
+      description: shareDescription,
+      images: ["/assets/og-image.jpg"],
+    },
   };
 }
 
