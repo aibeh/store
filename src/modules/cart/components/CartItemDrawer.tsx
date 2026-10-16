@@ -198,7 +198,7 @@ function CartItemDrawer({
               {Boolean(item.image) && (
                 <img
                   alt={item.title}
-                  className="h-[240px] w-full bg-secondary object-contain sm:h-[320px]"
+                  className="h-[240px] w-full bg-secondary object-cover sm:h-[320px]"
                   src={item.image}
                 />
               )}
