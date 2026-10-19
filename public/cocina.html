@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#ea580c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Cocina AIBEH">
+  <title>Cocina AIBEH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf7f2;
+      --card: #ffffff;
+      --ink: #1f1b16;
+      --muted: #6f665c;
+      --line: #e8e1d6;
+      --brand: #ea580c;
+      --brand-soft: #fff1e6;
+      --agr: #4285f4;
+      --agr-soft: #e8f0fe;
+      --std-soft: #f0ece5;
+      --danger: #b42318;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.45;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    [hidden] { display: none !important; }
+    button { font-family: inherit; }
+    .wrap { max-width: 540px; margin: 0 auto; padding: 0 16px 40px; }
+
+    /* ---- barra superior ---- */
+    .top {
+      position: sticky; top: 0; z-index: 5;
+      background: var(--brand); color: #fff;
+      padding: calc(12px + env(safe-area-inset-top)) 16px 12px;
+    }
+    .top-in { max-width: 540px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { font-family: "Bebas Neue", "Inter", sans-serif; font-size: 30px; letter-spacing: .04em; line-height: 1; }
+    .week { font-size: 14px; opacity: .95; font-weight: 500; }
+    .link-btn {
+      background: rgba(255,255,255,.18); color: #fff; border: 0; border-radius: 10px;
+      padding: 8px 14px; font-size: 14px; font-weight: 600; min-height: 40px; cursor: pointer;
+    }
+    .link-btn:active { background: rgba(255,255,255,.3); }
+
+    .status { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 14px 0 4px; color: var(--muted); font-size: 14px; }
+    .refresh {
+      background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 10px;
+      padding: 8px 14px; font-size: 14px; font-weight: 600; min-height: 40px; cursor: pointer;
+    }
+    .refresh:disabled { opacity: .6; }
+    .banner { background: #fef3f2; color: var(--danger); border: 1px solid #fecdca; border-radius: 12px; padding: 10px 14px; margin: 10px 0; font-size: 14px; }
+
+    /* ---- tarjetas ---- */
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-top: 12px; }
+    .eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 600; margin: 0 0 6px; }
+    h2 { font-family: "Bebas Neue", "Inter", sans-serif; font-weight: 400; font-size: 26px; letter-spacing: .03em; margin: 22px 0 0; }
+
+    .total-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .big { font-family: "Bebas Neue", "Inter", sans-serif; font-size: 64px; line-height: .95; letter-spacing: .01em; font-variant-numeric: tabular-nums; }
+    .big small { font-family: "Inter", sans-serif; font-size: 14px; color: var(--muted); font-weight: 500; letter-spacing: 0; margin-left: 4px; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip { border-radius: 10px; padding: 6px 10px; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .chip b { font-size: 17px; }
+    .chip.std { background: var(--std-soft); color: var(--ink); }
+    .chip.agr { background: var(--agr-soft); color: #1a56c4; }
+
+    .item { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; }
+    .num { width: 34px; height: 34px; border-radius: 50%; background: var(--brand); color: #fff; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+    .item-name { font-weight: 600; font-size: 16px; margin: 0 0 8px; }
+    .item-nums { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .item .big { font-size: 46px; }
+
+    .empty { color: var(--muted); text-align: center; padding: 28px 16px; }
+
+    /* ---- notas ---- */
+    textarea {
+      width: 100%; min-height: 96px; resize: vertical;
+      font: inherit; font-size: 16px; color: var(--ink);
+      background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px;
+    }
+    textarea:focus, input:focus { outline: 2px solid var(--brand); outline-offset: 1px; border-color: var(--brand); }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; }
+    .counter { font-size: 13px; color: var(--muted); }
+    .primary {
+      width: 100%; background: var(--brand); color: #fff; border: 0; border-radius: 12px;
+      padding: 14px 16px; font-size: 16px; font-weight: 700; min-height: 50px; cursor: pointer; margin-top: 10px;
+    }
+    .primary:active { filter: brightness(.92); }
+    .primary:disabled { opacity: .6; }
+    .msg { font-size: 14px; margin: 8px 0 0; min-height: 20px; }
+    .msg.err { color: var(--danger); }
+    .msg.ok { color: #067647; }
+    .note { border-top: 1px solid var(--line); padding: 12px 0; }
+    .note:first-child { border-top: 0; padding-top: 0; }
+    .note time { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+    .note p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+    /* ---- login ---- */
+    .login { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 24px 20px; max-width: 420px; margin: 0 auto; }
+    .login h1 { font-family: "Bebas Neue", "Inter", sans-serif; font-weight: 400; font-size: 44px; letter-spacing: .04em; margin: 0; color: var(--brand); line-height: 1; }
+    .login p { color: var(--muted); margin: 6px 0 22px; }
+    .login input { width: 100%; font: inherit; font-size: 20px; text-align: center; letter-spacing: .15em; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink); }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .card { transition: border-color .2s; }
+    }
+  </style>
+</head>
+<body>
+
+  <section id="login" class="login" hidden>
+    <h1>Cocina AIBEH</h1>
+    <p>Ingresá el PIN para ver el panel.</p>
+    <form id="login-form" autocomplete="off">
+      <input id="pin" type="password" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="PIN" placeholder="PIN" required>
+      <button class="primary" type="submit" id="login-btn">Entrar</button>
+      <p id="login-msg" class="msg err" role="alert"></p>
+    </form>
+  </section>
+
+  <div id="app" hidden>
+    <header class="top">
+      <div class="top-in">
+        <div>
+          <div class="brand">Cocina AIBEH</div>
+          <div class="week" id="week">&nbsp;</div>
+        </div>
+        <button class="link-btn" id="logout" type="button">Salir</button>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <div class="status">
+        <span id="updated">Cargando…</span>
+        <button class="refresh" id="refresh" type="button">Actualizar</button>
+      </div>
+      <div class="banner" id="banner" hidden role="alert"></div>
+
+      <section class="card" id="summary" hidden>
+        <p class="eyebrow">Total de la semana</p>
+        <div class="total-row">
+          <div class="big"><span id="sum-total">0</span><small>viandas</small></div>
+          <div class="chips">
+            <span class="chip std">Estándar <b id="sum-std">0</b></span>
+            <span class="chip agr">Agrandadas <b id="sum-agr">0</b></span>
+          </div>
+        </div>
+      </section>
+
+      <h2>Menú de la semana</h2>
+      <div id="menu"></div>
+
+      <h2>Observaciones de cocina</h2>
+      <section class="card">
+        <label class="eyebrow" for="nota">Anotá lo que necesite saber el equipo</label>
+        <textarea id="nota" maxlength="500" placeholder="Ej: Falta zapallo para la tarta del jueves."></textarea>
+        <div class="row"><span class="counter" id="counter">0 / 500</span></div>
+        <button class="primary" id="guardar" type="button">Guardar nota</button>
+        <p class="msg" id="nota-msg" role="status"></p>
+        <div id="notas"></div>
+      </section>
+    </main>
+  </div>
+
+<script>
+(function () {
+  var REFRESH_MS = 60000;
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (n) { return Number(n || 0).toLocaleString('es-AR'); };
+  var lastData = null;
+  var timer = null;
+  var loading = false;
+
+  function show(which) {
+    $('login').hidden = which !== 'login';
+    $('app').hidden = which !== 'app';
+  }
+
+  function el(tag, cls, text) {
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function chip(kind, label, value) {
+    var c = el('span', 'chip ' + kind, label + ' ');
+    c.appendChild(el('b', '', fmt(value)));
+    return c;
+  }
+
+  function renderMenu(data) {
+    var box = $('menu');
+    box.textContent = '';
+
+    if (!data.menu.length) {
+      box.appendChild(el('div', 'card empty', 'Todavía no hay menú cargado para esta semana.'));
+      return;
+    }
+
+    data.menu.forEach(function (m, i) {
+      var card = el('div', 'card item');
+      card.appendChild(el('div', 'num', String(i + 1)));
+
+      var body = el('div');
+      body.appendChild(el('p', 'item-name', m.nombre));
+
+      var nums = el('div', 'item-nums');
+      var big = el('div', 'big', fmt(m.total));
+      big.appendChild(el('small', '', 'viandas'));
+      nums.appendChild(big);
+
+      var chips = el('div', 'chips');
+      chips.appendChild(chip('std', 'Estándar', m.estandar));
+      chips.appendChild(chip('agr', 'Agrandadas', m.agrandadas));
+      nums.appendChild(chips);
+
+      body.appendChild(nums);
+      card.appendChild(body);
+      box.appendChild(card);
+    });
+  }
+
+  function renderNotes(data) {
+    var box = $('notas');
+    box.textContent = '';
+    if (!data.notas.length) return;
+
+    var wrap = el('div');
+    wrap.style.marginTop = '14px';
+    data.notas.forEach(function (n) {
+      var item = el('div', 'note');
+      item.appendChild(el('time', '', n.fecha));
+      item.appendChild(el('p', '', n.texto));
+      wrap.appendChild(item);
+    });
+    box.appendChild(wrap);
+  }
+
+  function render(data) {
+    lastData = data;
+    $('week').textContent = data.mes + ' · Semana ' + data.semana;
+    $('updated').textContent = 'Actualizado ' + data.actualizado + ' · ' + data.pedidos + (data.pedidos === 1 ? ' pedido' : ' pedidos');
+    $('summary').hidden = false;
+    $('sum-total').textContent = fmt(data.totales.total);
+    $('sum-std').textContent = fmt(data.totales.estandar);
+    $('sum-agr').textContent = fmt(data.totales.agrandadas);
+    $('banner').hidden = true;
+    renderMenu(data);
+    renderNotes(data);
+  }
+
+  function showError(message) {
+    var b = $('banner');
+    b.textContent = lastData
+      ? 'No se pudo actualizar (' + message + '). Se muestran los datos de las ' + lastData.actualizado + '.'
+      : message;
+    b.hidden = false;
+    if (!lastData) $('updated').textContent = 'Sin datos';
+  }
+
+  function load() {
+    if (loading) return Promise.resolve();
+    loading = true;
+    $('refresh').disabled = true;
+
+    return fetch('/api/cocina/data', { cache: 'no-store', credentials: 'same-origin' })
+      .then(function (res) {
+        if (res.status === 401) { stop(); show('login'); return null; }
+        return res.json().then(function (body) {
+          if (!res.ok) throw new Error(body.error || 'Error al leer la planilla');
+          return body;
+        });
+      })
+      .then(function (data) { if (data) { show('app'); render(data); start(); } })
+      .catch(function (err) { show('app'); showError(err.message || 'Sin conexión'); start(); })
+      .then(function () { loading = false; $('refresh').disabled = false; });
+  }
+
+  function start() {
+    if (timer) return;
+    timer = setInterval(function () { if (!document.hidden) load(); }, REFRESH_MS);
+  }
+  function stop() { if (timer) { clearInterval(timer); timer = null; } lastData = null; }
+
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && !$('app').hidden) load(); });
+  $('refresh').addEventListener('click', load);
+
+  $('login-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var btn = $('login-btn'), msg = $('login-msg');
+    msg.textContent = '';
+    btn.disabled = true; btn.textContent = 'Entrando…';
+
+    fetch('/api/cocina/login', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin: $('pin').value })
+    })
+      .then(function (res) { return res.json().then(function (b) { return { ok: res.ok, body: b }; }); })
+      .then(function (r) {
+        if (!r.ok) { msg.textContent = r.body.error || 'No se pudo entrar.'; $('pin').select(); return; }
+        $('pin').value = '';
+        load();
+      })
+      .catch(function () { msg.textContent = 'Sin conexión. Probá de nuevo.'; })
+      .then(function () { btn.disabled = false; btn.textContent = 'Entrar'; });
+  });
+
+  $('logout').addEventListener('click', function () {
+    fetch('/api/cocina/logout', { method: 'POST', credentials: 'same-origin' }).then(function () {
+      stop(); show('login'); $('pin').focus();
+    });
+  });
+
+  var nota = $('nota');
+  nota.addEventListener('input', function () { $('counter').textContent = nota.value.length + ' / 500'; });
+
+  $('guardar').addEventListener('click', function () {
+    var msg = $('nota-msg'), btn = $('guardar');
+    var texto = nota.value.trim();
+    msg.className = 'msg';
+    if (!texto) { msg.className = 'msg err'; msg.textContent = 'Escribí la nota antes de guardar.'; return; }
+
+    btn.disabled = true; btn.textContent = 'Guardando…'; msg.textContent = '';
+
+    fetch('/api/cocina/nota', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ texto: texto })
+    })
+      .then(function (res) {
+        if (res.status === 401) { stop(); show('login'); return null; }
+        return res.json().then(function (body) {
+          if (!res.ok) throw new Error(body.error || 'No se pudo guardar la nota');
+          return body;
+        });
+      })
+      .then(function (data) {
+        if (!data) return;
+        nota.value = ''; $('counter').textContent = '0 / 500';
+        render(data);
+        msg.className = 'msg ok'; msg.textContent = 'Nota guardada.';
+      })
+      .catch(function (err) { msg.className = 'msg err'; msg.textContent = err.message || 'Sin conexión'; })
+      .then(function () { btn.disabled = false; btn.textContent = 'Guardar nota'; });
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>
