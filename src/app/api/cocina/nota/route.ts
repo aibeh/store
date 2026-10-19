@@ -11,19 +11,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({error: "No autorizado."}, {status: 401});
   }
 
-  const body = (await request.json().catch(() => ({}))) as {texto?: unknown};
+  const body = (await request.json().catch(() => ({}))) as {texto?: unknown; menu?: unknown};
   const texto = typeof body.texto === "string" ? body.texto.trim().slice(0, 500) : "";
+  const menu = Number(body.menu);
 
   if (!texto) {
-    return NextResponse.json({error: "Escribí la nota antes de guardar."}, {status: 400});
+    return NextResponse.json({error: "Escribí la observación antes de guardar."}, {status: 400});
+  }
+
+  if (!Number.isInteger(menu) || menu < 1 || menu > 20) {
+    return NextResponse.json({error: "Elegí a qué menú corresponde la observación."}, {status: 400});
   }
 
   try {
-    const data = await callCocina({accion: "nota", texto});
+    const data = await callCocina({accion: "nota", texto, menu: String(menu)});
 
     return NextResponse.json(data, {headers: {"Cache-Control": "no-store"}});
   } catch (error) {
-    const message = error instanceof Error ? error.message : "No se pudo guardar la nota.";
+    const message = error instanceof Error ? error.message : "No se pudo guardar la observación.";
 
     return NextResponse.json({error: message}, {status: 502});
   }

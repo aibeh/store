@@ -19,11 +19,16 @@
       --muted: #6f665c;
       --line: #e8e1d6;
       --brand: #ea580c;
-      --brand-soft: #fff1e6;
       --agr: #4285f4;
       --agr-soft: #e8f0fe;
       --std-soft: #f0ece5;
       --danger: #b42318;
+      --obs-red: #c62828;
+      --obs-red-soft: #fff5f5;
+      --obs-red-line: #f5c2c2;
+      --obs-green: #067647;
+      --obs-green-soft: #f1faf5;
+      --obs-green-line: #c3e6d0;
     }
     * { box-sizing: border-box; }
     html { -webkit-text-size-adjust: 100%; }
@@ -78,6 +83,7 @@
     .chip.agr { background: var(--agr-soft); color: #1a56c4; }
 
     .item { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; }
+    .item > div:last-child { min-width: 0; }
     .num { width: 34px; height: 34px; border-radius: 50%; background: var(--brand); color: #fff; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
     .item-name { font-weight: 600; font-size: 16px; margin: 0 0 8px; }
     .item-nums { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
@@ -85,14 +91,28 @@
 
     .empty { color: var(--muted); text-align: center; padding: 28px 16px; }
 
-    /* ---- notas ---- */
+    /* ---- observaciones por menú ---- */
+    .obs {
+      display: flex; align-items: center; gap: 8px; width: 100%;
+      margin-top: 12px; padding: 10px 12px; min-height: 46px;
+      border: 1px solid var(--line); border-radius: 12px; background: #fff;
+      font-size: 15px; font-weight: 600; text-align: left; cursor: pointer;
+    }
+    .obs.has  { color: var(--obs-red);   background: var(--obs-red-soft);   border-color: var(--obs-red-line); }
+    .obs.none { color: var(--obs-green); background: var(--obs-green-soft); border-color: var(--obs-green-line); }
+    .ast { color: #d92d20; font-size: 26px; font-weight: 800; line-height: 1; margin-top: 6px; }
+    .chev { margin-left: auto; font-size: 14px; transition: transform .15s; }
+    .obs[aria-expanded="true"] .chev { transform: rotate(180deg); }
+    .obs-panel { margin-top: 8px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .obs-panel .eyebrow { margin-bottom: 6px; }
+
     textarea {
-      width: 100%; min-height: 96px; resize: vertical;
+      width: 100%; min-height: 84px; resize: vertical;
       font: inherit; font-size: 16px; color: var(--ink);
       background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px;
     }
-    textarea:focus, input:focus { outline: 2px solid var(--brand); outline-offset: 1px; border-color: var(--brand); }
-    .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; }
+    textarea:focus, input:focus, .obs:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; border-color: var(--brand); }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 6px; }
     .counter { font-size: 13px; color: var(--muted); }
     .primary {
       width: 100%; background: var(--brand); color: #fff; border: 0; border-radius: 12px;
@@ -102,21 +122,18 @@
     .primary:disabled { opacity: .6; }
     .msg { font-size: 14px; margin: 8px 0 0; min-height: 20px; }
     .msg.err { color: var(--danger); }
-    .msg.ok { color: #067647; }
+    .msg.ok { color: var(--obs-green); }
     .note { border-top: 1px solid var(--line); padding: 12px 0; }
-    .note:first-child { border-top: 0; padding-top: 0; }
+    .note:first-of-type { border-top: 0; padding-top: 0; }
     .note time { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
     .note p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .notes + .add { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
 
     /* ---- login ---- */
     .login { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 24px 20px; max-width: 420px; margin: 0 auto; }
     .login h1 { font-family: "Bebas Neue", "Inter", sans-serif; font-weight: 400; font-size: 44px; letter-spacing: .04em; margin: 0; color: var(--brand); line-height: 1; }
     .login p { color: var(--muted); margin: 6px 0 22px; }
     .login input { width: 100%; font: inherit; font-size: 20px; text-align: center; letter-spacing: .15em; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink); }
-
-    @media (prefers-reduced-motion: no-preference) {
-      .card { transition: border-color .2s; }
-    }
   </style>
 </head>
 <body>
@@ -163,14 +180,9 @@
       <h2>Menú de la semana</h2>
       <div id="menu"></div>
 
-      <h2>Observaciones de cocina</h2>
-      <section class="card">
-        <label class="eyebrow" for="nota">Anotá lo que necesite saber el equipo</label>
-        <textarea id="nota" maxlength="500" placeholder="Ej: Falta zapallo para la tarta del jueves."></textarea>
-        <div class="row"><span class="counter" id="counter">0 / 500</span></div>
-        <button class="primary" id="guardar" type="button">Guardar nota</button>
-        <p class="msg" id="nota-msg" role="status"></p>
-        <div id="notas"></div>
+      <section class="card" id="generales" hidden>
+        <p class="eyebrow">Observaciones generales (sin menú asignado)</p>
+        <div id="generales-list"></div>
       </section>
     </main>
   </div>
@@ -183,6 +195,12 @@
   var lastData = null;
   var timer = null;
   var loading = false;
+
+  // Estado de la pantalla que no debe perderse al actualizar los datos
+  var open = {};    // menú abierto (por número)
+  var drafts = {};  // texto a medio escribir (por número de menú)
+  var flash = {};   // mensaje tras guardar (por número de menú)
+  var saving = {};  // guardado en curso (por número de menú)
 
   function show(which) {
     $('login').hidden = which !== 'login';
@@ -200,6 +218,73 @@
     var c = el('span', 'chip ' + kind, label + ' ');
     c.appendChild(el('b', '', fmt(value)));
     return c;
+  }
+
+  function notesList(notas) {
+    var list = el('div', 'notes');
+    notas.forEach(function (n) {
+      var item = el('div', 'note');
+      item.appendChild(el('time', '', n.fecha));
+      item.appendChild(el('p', '', n.texto));
+      list.appendChild(item);
+    });
+    return list;
+  }
+
+  function obsButton(m) {
+    var tiene = m.notas.length > 0;
+    var btn = el('button', 'obs ' + (tiene ? 'has' : 'none'));
+    btn.type = 'button';
+    btn.setAttribute('aria-expanded', open[m.numero] ? 'true' : 'false');
+
+    if (tiene) {
+      btn.appendChild(el('span', 'ast', '*'));
+      btn.appendChild(el('span', '', 'Contiene observaciones' + (m.notas.length > 1 ? ' (' + m.notas.length + ')' : '')));
+    } else {
+      btn.appendChild(el('span', '', 'No contiene observaciones'));
+    }
+    btn.appendChild(el('span', 'chev', '▾'));
+
+    btn.addEventListener('click', function () {
+      open[m.numero] = !open[m.numero];
+      delete flash[m.numero];
+      renderMenu(lastData);
+    });
+    return btn;
+  }
+
+  function obsPanel(m) {
+    var panel = el('div', 'obs-panel');
+
+    if (m.notas.length) panel.appendChild(notesList(m.notas));
+
+    var add = el('div', 'add');
+    var label = el('label', 'eyebrow', 'Agregar observación');
+    var area = el('textarea');
+    var id = 'obs-' + m.numero;
+    area.id = id; label.setAttribute('for', id);
+    area.maxLength = 500;
+    area.placeholder = 'Ej: Las de berenjena normales van sin jamón.';
+    area.value = drafts[m.numero] || '';
+
+    var counter = el('span', 'counter', area.value.length + ' / 500');
+    area.addEventListener('input', function () {
+      drafts[m.numero] = area.value;
+      counter.textContent = area.value.length + ' / 500';
+    });
+
+    var btn = el('button', 'primary', saving[m.numero] ? 'Guardando…' : 'Guardar observación');
+    btn.type = 'button';
+    btn.disabled = !!saving[m.numero];
+    btn.addEventListener('click', function () { saveNote(m.numero); });
+
+    var msg = el('p', 'msg' + (flash[m.numero] ? (flash[m.numero].ok ? ' ok' : ' err') : ''), flash[m.numero] ? flash[m.numero].text : '');
+    msg.setAttribute('role', 'status');
+
+    var row = el('div', 'row'); row.appendChild(counter);
+    add.appendChild(label); add.appendChild(area); add.appendChild(row); add.appendChild(btn); add.appendChild(msg);
+    panel.appendChild(add);
+    return panel;
   }
 
   function renderMenu(data) {
@@ -227,27 +312,22 @@
       chips.appendChild(chip('std', 'Estándar', m.estandar));
       chips.appendChild(chip('agr', 'Agrandadas', m.agrandadas));
       nums.appendChild(chips);
-
       body.appendChild(nums);
+
+      body.appendChild(obsButton(m));
+      if (open[m.numero]) body.appendChild(obsPanel(m));
+
       card.appendChild(body);
       box.appendChild(card);
     });
   }
 
-  function renderNotes(data) {
-    var box = $('notas');
-    box.textContent = '';
-    if (!data.notas.length) return;
-
-    var wrap = el('div');
-    wrap.style.marginTop = '14px';
-    data.notas.forEach(function (n) {
-      var item = el('div', 'note');
-      item.appendChild(el('time', '', n.fecha));
-      item.appendChild(el('p', '', n.texto));
-      wrap.appendChild(item);
-    });
-    box.appendChild(wrap);
+  function renderGenerales(data) {
+    var card = $('generales');
+    var list = $('generales-list');
+    list.textContent = '';
+    card.hidden = !data.notasGenerales.length;
+    if (data.notasGenerales.length) list.appendChild(notesList(data.notasGenerales));
   }
 
   function render(data) {
@@ -260,7 +340,7 @@
     $('sum-agr').textContent = fmt(data.totales.agrandadas);
     $('banner').hidden = true;
     renderMenu(data);
-    renderNotes(data);
+    renderGenerales(data);
   }
 
   function showError(message) {
@@ -272,8 +352,16 @@
     if (!lastData) $('updated').textContent = 'Sin datos';
   }
 
-  function load() {
+  // Si alguien está escribiendo una observación, la actualización automática
+  // espera: no queremos que le cierre el teclado ni le pise lo que escribe.
+  function escribiendo() {
+    var a = document.activeElement;
+    return !!(a && a.tagName === 'TEXTAREA' && $('menu').contains(a));
+  }
+
+  function load(auto) {
     if (loading) return Promise.resolve();
+    if (auto && escribiendo()) return Promise.resolve();
     loading = true;
     $('refresh').disabled = true;
 
@@ -285,19 +373,58 @@
           return body;
         });
       })
-      .then(function (data) { if (data) { show('app'); render(data); start(); } })
+      .then(function (data) {
+        if (!data) return;
+        show('app');
+        if (auto && escribiendo()) { start(); return; }
+        render(data);
+        start();
+      })
       .catch(function (err) { show('app'); showError(err.message || 'Sin conexión'); start(); })
       .then(function () { loading = false; $('refresh').disabled = false; });
   }
 
   function start() {
     if (timer) return;
-    timer = setInterval(function () { if (!document.hidden) load(); }, REFRESH_MS);
+    timer = setInterval(function () { if (!document.hidden) load(true); }, REFRESH_MS);
   }
-  function stop() { if (timer) { clearInterval(timer); timer = null; } lastData = null; }
+  function stop() { if (timer) { clearInterval(timer); timer = null; } lastData = null; open = {}; drafts = {}; flash = {}; saving = {}; }
 
-  document.addEventListener('visibilitychange', function () { if (!document.hidden && !$('app').hidden) load(); });
-  $('refresh').addEventListener('click', load);
+  function saveNote(numero) {
+    var texto = (drafts[numero] || '').trim();
+    if (!texto) { flash[numero] = { ok: false, text: 'Escribí la observación antes de guardar.' }; renderMenu(lastData); return; }
+
+    saving[numero] = true; delete flash[numero]; renderMenu(lastData);
+
+    fetch('/api/cocina/nota', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ texto: texto, menu: numero })
+    })
+      .then(function (res) {
+        if (res.status === 401) { stop(); show('login'); return null; }
+        return res.json().then(function (body) {
+          if (!res.ok) throw new Error(body.error || 'No se pudo guardar la observación');
+          return body;
+        });
+      })
+      .then(function (data) {
+        if (!data) return;
+        drafts[numero] = '';
+        flash[numero] = { ok: true, text: 'Observación guardada.' };
+        open[numero] = true;
+        saving[numero] = false;
+        render(data);
+      })
+      .catch(function (err) {
+        saving[numero] = false;
+        flash[numero] = { ok: false, text: err.message || 'Sin conexión' };
+        if (lastData) renderMenu(lastData);
+      });
+  }
+
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && !$('app').hidden) load(true); });
+  $('refresh').addEventListener('click', function () { load(false); });
 
   $('login-form').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -314,7 +441,7 @@
       .then(function (r) {
         if (!r.ok) { msg.textContent = r.body.error || 'No se pudo entrar.'; $('pin').select(); return; }
         $('pin').value = '';
-        load();
+        load(false);
       })
       .catch(function () { msg.textContent = 'Sin conexión. Probá de nuevo.'; })
       .then(function () { btn.disabled = false; btn.textContent = 'Entrar'; });
@@ -326,40 +453,7 @@
     });
   });
 
-  var nota = $('nota');
-  nota.addEventListener('input', function () { $('counter').textContent = nota.value.length + ' / 500'; });
-
-  $('guardar').addEventListener('click', function () {
-    var msg = $('nota-msg'), btn = $('guardar');
-    var texto = nota.value.trim();
-    msg.className = 'msg';
-    if (!texto) { msg.className = 'msg err'; msg.textContent = 'Escribí la nota antes de guardar.'; return; }
-
-    btn.disabled = true; btn.textContent = 'Guardando…'; msg.textContent = '';
-
-    fetch('/api/cocina/nota', {
-      method: 'POST', credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ texto: texto })
-    })
-      .then(function (res) {
-        if (res.status === 401) { stop(); show('login'); return null; }
-        return res.json().then(function (body) {
-          if (!res.ok) throw new Error(body.error || 'No se pudo guardar la nota');
-          return body;
-        });
-      })
-      .then(function (data) {
-        if (!data) return;
-        nota.value = ''; $('counter').textContent = '0 / 500';
-        render(data);
-        msg.className = 'msg ok'; msg.textContent = 'Nota guardada.';
-      })
-      .catch(function (err) { msg.className = 'msg err'; msg.textContent = err.message || 'Sin conexión'; })
-      .then(function () { btn.disabled = false; btn.textContent = 'Guardar nota'; });
-  });
-
-  load();
+  load(false);
 })();
 </script>
 </body>
