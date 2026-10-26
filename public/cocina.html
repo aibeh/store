@@ -89,6 +89,10 @@
     .item-nums { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
     .item .big { font-size: 46px; }
 
+    .extra-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 18px; font-weight: 600; }
+    .extra-row:first-of-type { border-top: 0; }
+    .extra-row b { font-family: "Bebas Neue", "Inter", sans-serif; font-weight: 400; font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
+
     .empty { color: var(--muted); text-align: center; padding: 28px 16px; }
 
     /* ---- observaciones por menú ---- */
@@ -183,6 +187,12 @@
       <section class="card" id="generales" hidden>
         <p class="eyebrow">Observaciones generales (sin menú asignado)</p>
         <div id="generales-list"></div>
+      </section>
+
+      <section class="card" id="extras" hidden>
+        <p class="eyebrow">Extras de la semana</p>
+        <div class="extra-row"><span>Pancakes</span><b id="ext-pancakes">0</b></div>
+        <div class="extra-row"><span>Pan</span><b id="ext-pan">0</b></div>
       </section>
     </main>
   </div>
@@ -330,6 +340,14 @@
     if (data.notasGenerales.length) list.appendChild(notesList(data.notasGenerales));
   }
 
+  function renderExtras(data) {
+    // Si el script de la planilla todavía no manda "extras", la tarjeta queda oculta.
+    $('extras').hidden = !data.extras;
+    if (!data.extras) return;
+    $('ext-pancakes').textContent = fmt(data.extras.pancakes);
+    $('ext-pan').textContent = fmt(data.extras.pan);
+  }
+
   function render(data) {
     lastData = data;
     $('week').textContent = data.mes + ' · Semana ' + data.semana;
@@ -341,6 +359,7 @@
     $('banner').hidden = true;
     renderMenu(data);
     renderGenerales(data);
+    renderExtras(data);
   }
 
   function showError(message) {
