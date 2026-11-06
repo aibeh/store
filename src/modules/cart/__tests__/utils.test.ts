@@ -270,14 +270,22 @@ describe("Precio en efectivo de los packs", () => {
     expect(getCashTotal(new Map([["a", pack(15, 146000)]]), 0)).toEqual(131000);
   });
 
-  it("el envío y los extras mantienen el 10% de descuento", () => {
+  it("los extras mantienen el 10% de descuento y el envío se cobra completo", () => {
     const cart = new Map([
       ["a", pack(10, 108000)],
       ["b", {...item, id: "pan", title: "Pan integral con semillas", price: 5000}],
     ]);
 
-    // 97.500 (pack) + 4.500 (pan con 10%) + 1.350 (envío $1.500 con 10%)
-    expect(getCashTotal(cart, 1500)).toEqual(103350);
+    // 97.500 (pack) + 4.500 (pan con 10%) + 1.500 (envío completo)
+    expect(getCashTotal(cart, 1500)).toEqual(103500);
+  });
+
+  it("un pack con envío en efectivo: precio fijo + envío sin descuento", () => {
+    const cart = new Map([["a", pack(10, 108000)]]);
+
+    expect(getCashTotal(cart, 1500)).toEqual(99000);
+    expect(getCashTotal(new Map([["a", pack(5, 60000)]]), 2000)).toEqual(56000);
+    expect(getCashTotal(new Map([["a", pack(15, 146000)]]), 4000)).toEqual(135000);
   });
 
   it("el mensaje de WhatsApp muestra el total en efectivo con el precio fijo", () => {

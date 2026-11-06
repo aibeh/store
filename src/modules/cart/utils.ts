@@ -69,7 +69,7 @@ export function getCartTotal(cart: Cart): number {
 // Cada pack tiene un precio en efectivo FIJO (redondo). El "10% OFF" que se
 // muestra en los textos es estimado: el precio real en efectivo de los packs
 // sale de esta tabla, no de multiplicar por 0,9. Todo lo demás (extras como
-// pan o pancakes, y el envío) mantiene el 10% de descuento exacto.
+// pan o pancakes) mantiene el 10% de descuento exacto. El envío no se descuenta.
 export const CASH_DISCOUNT_RATE = 0.1;
 export const CASH_PACK_PRICES: Record<5 | 10 | 15, number> = {
   5: 54000,
@@ -103,11 +103,12 @@ export function getCashItemPrice(item: CartItem): number {
   return CASH_PACK_PRICES[packSize] * item.quantity + extrasOnTop * (1 - CASH_DISCOUNT_RATE);
 }
 
-// Total final pagando en efectivo (el envío también lleva el 10%, como antes).
+// Total final pagando en efectivo: el descuento aplica solo a los productos;
+// el envío se cobra completo.
 export function getCashTotal(cart: Cart, shippingPrice: number): number {
   const items = Array.from(cart.values()).reduce((total, item) => total + getCashItemPrice(item), 0);
 
-  return Math.round(items + shippingPrice * (1 - CASH_DISCOUNT_RATE));
+  return Math.round(items + shippingPrice);
 }
 
 function hasQuantityCondition(condition?: string): boolean {
