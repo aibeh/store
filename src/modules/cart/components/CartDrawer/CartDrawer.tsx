@@ -18,7 +18,7 @@ import {Button} from "@/components/ui/button";
 import WhatsappIcon from "@/components/icons/whatsapp";
 
 import {useCart} from "../../context/client";
-import {getCouponGiftQuantity, getOrderPayload} from "../../utils";
+import {getCashTotal, getCouponGiftQuantity, getOrderPayload} from "../../utils";
 
 import Coupon from "./Coupon";
 import Details from "./Details";
@@ -135,6 +135,7 @@ function CartDrawer({
               fields={fields}
               showErrors={showErrors}
               totalAmount={totalAmount}
+              cashTotal={getCashTotal(cart, shipping?.price || 0)}
               onChange={handleUpdateField}
             />
           ) : null}

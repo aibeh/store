@@ -65,6 +65,51 @@ export function getCartTotal(cart: Cart): number {
   );
 }
 
+// ── Precio en efectivo ───────────────────────────────────────
+// Cada pack tiene un precio en efectivo FIJO (redondo). El "10% OFF" que se
+// muestra en los textos es estimado: el precio real en efectivo de los packs
+// sale de esta tabla, no de multiplicar por 0,9. Todo lo demás (extras como
+// pan o pancakes, y el envío) mantiene el 10% de descuento exacto.
+export const CASH_DISCOUNT_RATE = 0.1;
+export const CASH_PACK_PRICES: Record<5 | 10 | 15, number> = {
+  5: 54000,
+  10: 97500,
+  15: 131000,
+};
+
+export function getPackSizeFromTitle(title: string): 5 | 10 | 15 | null {
+  const match = /pack de (5|10|15)\s*viandas/i.exec(title);
+
+  return match ? (Number(match[1]) as 5 | 10 | 15) : null;
+}
+
+// Precio en efectivo de un producto del listado (tarjetas de la tienda).
+export function getCashPrice(title: string, price: number): number {
+  const packSize = getPackSizeFromTitle(title);
+
+  return packSize ? CASH_PACK_PRICES[packSize] : Math.round(price * (1 - CASH_DISCOUNT_RATE));
+}
+
+// Precio en efectivo de un item del carrito: el pack usa su precio fijo y lo
+// que se le suma encima (opciones con costo) lleva el 10% de descuento.
+export function getCashItemPrice(item: CartItem): number {
+  const packSize = getPackSizeFromTitle(item.title);
+  const fullPrice = getCartItemPrice(item);
+
+  if (!packSize) return fullPrice * (1 - CASH_DISCOUNT_RATE);
+
+  const extrasOnTop = fullPrice - item.price * item.quantity;
+
+  return CASH_PACK_PRICES[packSize] * item.quantity + extrasOnTop * (1 - CASH_DISCOUNT_RATE);
+}
+
+// Total final pagando en efectivo (el envío también lleva el 10%, como antes).
+export function getCashTotal(cart: Cart, shippingPrice: number): number {
+  const items = Array.from(cart.values()).reduce((total, item) => total + getCashItemPrice(item), 0);
+
+  return Math.round(items + shippingPrice * (1 - CASH_DISCOUNT_RATE));
+}
+
 function hasQuantityCondition(condition?: string): boolean {
   const conditions = condition?.split("||") || [];
 
@@ -176,7 +221,7 @@ export function getOrderPayload(
     subtotal,
     costoEnvio,
     total,
-    totalConDescuentoEfectivo: isCashPayment ? Math.round(total * 0.9) : null,
+    totalConDescuentoEfectivo: isCashPayment ? getCashTotal(cart, costoEnvio) : null,
     cupon: coupon
       ? (() => {
           const cantidadRegalo = getCouponGiftQuantity(coupon, cart);
@@ -227,7 +272,7 @@ export function getCartMessage(
     value.toLowerCase().includes("efectivo"),
   );
   const finalTotal = isCashPayment
-    ? `Total con 10% OFF en efectivo: ${parseCurrency(total * 0.9)}`
+    ? `Total con 10% OFF en efectivo: ${parseCurrency(getCashTotal(cart, shipping?.price || 0))}`
     : `Total: ${parseCurrency(total)}`;
   const separator = "------------------------------";
 

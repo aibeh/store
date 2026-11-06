@@ -68,19 +68,20 @@ function RadioField({
   );
 }
 
-const CASH_DISCOUNT_RATE = 0.1;
 const RECOMMENDED_OPTION_KEYWORD = "efectivo";
 
 function Fields({
   fields,
   checkout,
   totalAmount,
+  cashTotal,
   showErrors,
   onChange,
 }: {
   fields: Field[];
   checkout: Checkout;
   totalAmount: number;
+  cashTotal: number;
   showErrors: boolean;
   onChange: (id: string, value: string) => void;
 }) {
@@ -89,7 +90,7 @@ function Fields({
   );
   const paymentValue = paymentField ? checkout.get(paymentField.title) : undefined;
   const isCashPayment = Boolean(paymentValue && normalize(paymentValue).includes("efectivo"));
-  const discountedTotal = totalAmount * (1 - CASH_DISCOUNT_RATE);
+  const discountedTotal = cashTotal;
 
   // Show the customer's name, then the shipping address, then everything else
   // (payment method, etc.), regardless of the order in the sheet.

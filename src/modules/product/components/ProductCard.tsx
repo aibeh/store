@@ -5,11 +5,10 @@ import type {Product} from "../types";
 import {ImageOff} from "lucide-react";
 
 import {parseCurrency} from "~/currency/utils";
-
-const CASH_DISCOUNT_RATE = 0.1;
+import {getCashPrice} from "~/cart/utils";
 
 function ProductCard({product}: {product: Product}) {
-  const cashPrice = Math.round(product.price * (1 - CASH_DISCOUNT_RATE));
+  const cashPrice = getCashPrice(product.title, product.price);
 
   return (
     <div
