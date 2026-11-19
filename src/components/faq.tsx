@@ -3,6 +3,8 @@
 import {useState} from "react";
 import {ChevronDown} from "lucide-react";
 
+import {FondoDibujos} from "./fondo-dibujos";
+
 import {cn} from "@/lib/utils";
 
 const FAQ_ITEMS = [
@@ -63,12 +65,13 @@ export function Faq() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="border-t-2 border-foreground/20 px-4 py-12">
+    <section className="relative isolate scroll-mt-4 px-4 pb-12 pt-28" id="preguntas-frecuentes">
+      <FondoDibujos />
       <div className="container mx-auto">
         <h2 className="mb-8 text-center font-heading text-4xl tracking-wide">
           Preguntas frecuentes
         </h2>
-        <div className="mx-auto max-w-2xl">
+        <div className="mx-auto max-w-2xl rounded-2xl border border-white/50 bg-white/55 px-5 shadow-sm [&>div:last-child]:border-b-0">
           {FAQ_ITEMS.map((item, index) => {
             const isOpen = openIndex === index;
 

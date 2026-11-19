@@ -8,7 +8,6 @@ import {getWeeklyMenu} from "~/product/utils";
 import CartProvider from "~/cart/context";
 import ThemeProvider from "~/theme/context";
 
-import Image from "next/image";
 
 import "./globals.css";
 import {Header} from "@/components/header";
@@ -18,6 +17,7 @@ import {AboutAgus} from "@/components/about-agus";
 import {Footer} from "@/components/footer";
 import {Faq} from "@/components/faq";
 import {Testimonials} from "@/components/testimonials";
+import {FondoDibujos} from "@/components/fondo-dibujos";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -86,24 +86,26 @@ const RootLayout = async ({children}: {children: React.ReactNode}) => {
               <HowItWorks isStoreOpen={isStoreOpen} weeklyMenu={weeklyMenu} />
             </header>
             <main
-              className="relative flex flex-col gap-2 overflow-hidden border-t-2 border-foreground/20 px-4 pt-10"
+              className="relative isolate flex scroll-mt-4 flex-col gap-2 border-t-2 border-foreground/20 px-4 pt-10"
               id="hace-tu-pedido"
             >
-              <Image
-                src="/assets/order-bg-deco.webp"
-                alt=""
-                aria-hidden="true"
-                fill
-                className="pointer-events-none absolute inset-0 -z-10 select-none object-cover opacity-[0.04] mix-blend-multiply"
-              />
+              <FondoDibujos />
               <h2 className="font-heading text-center text-4xl tracking-wide">¡Hacé tu pedido!</h2>
               <p className="mb-6 text-center font-script text-3xl text-muted-foreground">
                 Tu semana saludable empieza acá.
               </p>
               <CartProvider>{children}</CartProvider>
             </main>
-            <Faq />
-            <Testimonials />
+            {/* Franja naranja de la marca (#F3A14B) con difuminado arriba y abajo, como giapura.
+                Los textos grises se oscurecen acá adentro para que se lean bien sobre el naranja. */}
+            <div className="relative isolate [--muted-foreground:25_45%_18%]">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-0 left-1/2 -z-10 w-screen -translate-x-1/2 bg-[linear-gradient(to_bottom,#f0ead3_0,#F3A14B_180px,#F3A14B_calc(100%-180px),#f0ead3_100%)]"
+              />
+              <Faq />
+              <Testimonials />
+            </div>
             <footer className="px-4">
               <AboutAgus store={store} />
               <Footer store={store} />

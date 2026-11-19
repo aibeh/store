@@ -3,6 +3,8 @@
 import {useRef, useState} from "react";
 import {ChevronLeft, ChevronRight} from "lucide-react";
 
+import {FondoDibujos} from "./fondo-dibujos";
+
 import {cn} from "@/lib/utils";
 
 const TESTIMONIALS: {text: string; author: string; zone?: string}[] = [
@@ -64,7 +66,7 @@ function TestimonialCard({testimonial, index}: {testimonial: (typeof TESTIMONIAL
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="w-[280px] shrink-0 snap-start rounded-lg border bg-background p-5 sm:w-[320px]">
+    <div className="w-[280px] shrink-0 snap-start rounded-lg border border-white/50 bg-white/55 p-5 shadow-sm sm:w-[320px]">
       <div className="mb-2 text-amber-500">★★★★★</div>
       <p
         className={cn("mb-1 text-sm italic leading-relaxed text-muted-foreground", {
@@ -109,7 +111,8 @@ export function Testimonials() {
   }
 
   return (
-    <section className="border-t-2 border-foreground/20 px-4 py-12">
+    <section className="relative isolate scroll-mt-4 px-4 pb-28 pt-12" id="opiniones">
+      <FondoDibujos />
       <div className="container mx-auto">
         <div className="mb-6 text-center">
           <h2 className="font-heading text-4xl tracking-wide">Lo que dicen nuestros clientes</h2>

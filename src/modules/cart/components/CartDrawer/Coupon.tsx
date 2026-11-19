@@ -41,7 +41,7 @@ function Coupon({
         </Button>
       </div>
       {appliedCoupon && Boolean(giftQuantity) && (
-        <div className="flex items-center justify-between gap-2 rounded-md bg-secondary p-3 text-sm">
+        <div className="flex items-center justify-between gap-2 rounded-md border border-white/60 bg-white/50 p-3 text-sm">
           <p>
             <span className="font-semibold">{appliedCoupon.codigo}</span> aplicado: +{giftQuantity}{" "}
             {getCouponGiftLabel(appliedCoupon, giftQuantity)} de regalo 🎁

@@ -144,7 +144,7 @@ function Fields({
             field.type === "radio" &&
             normalize(field.title).includes("pago") &&
             (isCashPayment ? (
-              <div className="flex flex-col gap-1 rounded-md bg-secondary p-4">
+              <div className="flex flex-col gap-1 rounded-md border border-white/60 bg-white/50 p-4">
                 <p className="text-sm text-muted-foreground">Total con 10% OFF en efectivo</p>
                 <div className="flex items-baseline gap-2">
                   <p className="text-sm text-muted-foreground line-through">
@@ -156,7 +156,7 @@ function Fields({
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col gap-1 rounded-md bg-secondary p-4">
+              <div className="flex flex-col gap-1 rounded-md border border-white/60 bg-white/50 p-4">
                 <p className="text-sm text-muted-foreground">Total</p>
                 <p className="text-lg font-semibold">{parseCurrency(totalAmount)}</p>
               </div>

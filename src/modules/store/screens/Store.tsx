@@ -77,7 +77,7 @@ function StoreScreen({products, selected}: {products: Product[]; selected: null 
           <div className="relative flex w-full items-center sm:max-w-xs">
             <SearchIcon className="absolute left-3 h-4 w-4 opacity-40" />
             <Input
-              className="px-9"
+              className="border-white/60 bg-white/50 px-9"
               placeholder="Buscar..."
               value={query}
               onChange={(event) => {

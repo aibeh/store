@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* MAQUETA cuentas: fuente de marca para el panel de fueguitos */
+@font-face {
+  font-family: "Barber Chop";
+  src: url("/assets/fonts/BarberChop.otf") format("opentype");
+  font-display: swap;
+}
+
+/* MAQUETA: barra de mensajes que se desliza en el celular */
+@keyframes aibeh-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.aibeh-marquee { animation: aibeh-marquee 22s linear infinite; }
+@media (min-width: 768px) {
+  .aibeh-marquee { animation: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aibeh-marquee { animation: none; }
+}
+
 
 @layer base {
   :root {
@@ -58,7 +78,12 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background-color: #f0ead3; /* beige de la marca */
+    overflow-x: clip;
   }
 }

@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#ea580c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Clientes AIBEH">
+  <title>Clientes AIBEH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    @font-face { font-family: "Barber Chop"; src: url("/assets/fonts/BarberChop.otf") format("opentype"); }
+    :root { --bg: #faf7f2; --card: #fff; --ink: #1f1b16; --muted: #6f665c; --line: #e8e1d6; --brand: #ea580c; --brand-soft: #fff3ea; --wa: #1fa855; --danger: #b42318; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Inter", system-ui, sans-serif; font-size: 15px; }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 16px 16px 60px; }
+    header { display: flex; align-items: center; justify-content: space-between; margin: 8px 0 16px; gap: 10px; }
+    h1 { font-family: "Barber Chop", sans-serif; font-weight: 400; font-size: 34px; letter-spacing: .03em; margin: 0; line-height: 1; display: flex; align-items: center; gap: 8px; }
+    h1 img { width: 30px; height: 30px; }
+    .sub { color: var(--muted); font-size: 13px; }
+    .btn { border: 0; border-radius: 10px; padding: 11px 14px; font: 600 14px "Inter"; cursor: pointer; }
+    .btn:disabled { opacity: .5; cursor: default; }
+    .btn.wa { background: var(--wa); color: #fff; width: 100%; }
+    .btn.dark { background: var(--ink); color: #fff; }
+    .btn.ghost { background: #f0ece5; color: var(--ink); }
+    .btn.sm { padding: 7px 10px; font-size: 12px; }
+    .btn.link { background: none; color: var(--muted); padding: 6px; font-weight: 500; }
+    .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+    .tab { background: none; border: 0; border-bottom: 3px solid transparent; padding: 10px 12px; font: 600 14px "Inter"; color: var(--muted); cursor: pointer; }
+    .tab.on { color: var(--ink); border-color: var(--brand); }
+    .pill { display: inline-block; background: var(--brand); color: #fff; border-radius: 99px; padding: 1px 7px; font-size: 11px; margin-left: 4px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+    .card.nuevo { border-left: 4px solid var(--brand); }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .name { font-weight: 700; font-size: 16px; }
+    .meta { color: var(--muted); font-size: 13px; }
+    .creds { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+    label.f { font-size: 12px; color: var(--muted); display: block; }
+    input.i, label.f input { margin-top: 3px; width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 10px; font: 600 15px "Inter"; background: #fdfbf8; }
+    .fire { color: var(--brand); font-weight: 700; }
+    .badge { font-size: 11px; padding: 2px 8px; border-radius: 99px; background: var(--brand-soft); color: var(--brand); font-weight: 600; }
+    .search { width: 100%; padding: 11px 14px; border: 1px solid var(--line); border-radius: 12px; font: 15px "Inter"; margin-bottom: 10px; }
+    .cl { cursor: pointer; }
+    .detail { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
+    .cl.open .detail { display: block; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 12px; }
+    .aviso { background: var(--brand-soft); border: 1px solid #fcd3b6; border-radius: 12px; padding: 12px 14px; font-size: 13px; margin-bottom: 14px; }
+    .cumples { background: linear-gradient(135deg, #fff3ea, #ffe7d4); border: 1px solid #fcd3b6; border-radius: 14px; padding: 14px; margin-bottom: 16px; }
+    .cumples h2 { margin: 0 0 2px; font-size: 15px; }
+    .cu { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 12px; padding: 10px 12px; margin-top: 8px; flex-wrap: wrap; }
+    .cu .acts { margin-left: auto; display: flex; gap: 6px; }
+    .when { font-size: 12px; font-weight: 700; color: var(--brand); }
+    .hidden { display: none !important; }
+    .empty { text-align: center; color: var(--muted); padding: 30px 10px; font-size: 14px; }
+    .err { background: #fef3f2; color: var(--danger); border-radius: 10px; padding: 10px 12px; font-size: 13px; margin: 8px 0; }
+    .ok { color: var(--wa); font-weight: 600; font-size: 13px; }
+    .login { max-width: 340px; margin: 18vh auto 0; text-align: center; }
+    .login input { text-align: center; font-size: 22px; letter-spacing: .3em; }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #323232; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: 13px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20; max-width: 90vw; text-align: center; }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <!-- PIN -->
+  <div class="wrap login" id="v-login">
+    <h1 style="justify-content:center"><img src="/assets/fueguito.png" alt="">CLIENTES AIBEH</h1>
+    <p class="sub" style="margin:8px 0 18px">Ingresá el PIN del panel</p>
+    <form id="f-login">
+      <input class="i" id="pin" inputmode="numeric" autocomplete="one-time-code" placeholder="••••••" required>
+      <div class="err hidden" id="login-err"></div>
+      <button class="btn dark" style="width:100%;margin-top:10px" type="submit">Entrar</button>
+    </form>
+  </div>
+
+  <!-- PANEL -->
+  <div class="wrap hidden" id="v-panel">
+    <header>
+      <div>
+        <h1><img src="/assets/fueguito.png" alt="">CLIENTES AIBEH</h1>
+        <div class="sub">Registros, fueguitos y cumpleaños</div>
+      </div>
+      <div style="display:flex;gap:4px">
+        <button class="btn link" id="b-recargar" title="Actualizar">↻ Actualizar</button>
+        <button class="btn link" id="b-salir">Salir</button>
+      </div>
+    </header>
+
+    <div class="err hidden" id="panel-err"></div>
+
+    <div class="cumples hidden" id="cumples">
+      <h2>🎂 Cumpleaños de esta semana</h2>
+      <div class="sub">Sumales sus 10 🔥 de regalo y mandales un saludo.</div>
+      <div id="lista-cumples"></div>
+    </div>
+
+    <nav class="tabs">
+      <button class="tab on" data-t="nuevos">Nuevos <span class="pill hidden" id="pill"></span></button>
+      <button class="tab" data-t="clientes">Clientes</button>
+    </nav>
+
+    <section id="t-nuevos">
+      <div class="aviso">Cada vez que alguien se registra te llega un mail y aparece acá. Revisá el usuario y la contraseña y tocá <b>Dar de alta y enviar por WhatsApp</b>: se guarda la cuenta, se le suman los 10 🔥 de bienvenida y se abre WhatsApp con el mensaje listo.</div>
+      <div id="lista-nuevos"></div>
+    </section>
+
+    <section id="t-clientes" class="hidden">
+      <input class="search" id="buscar" placeholder="Buscar por nombre, usuario o WhatsApp…">
+      <div id="lista-clientes"></div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+    const WEB = location.origin.includes("localhost") ? "somosaibeh.com" : location.host;
+    let datos = {nuevos: [], clientes: [], cumples: []};
+    let abierto = null;
+
+    const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const slug = (n) => n.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9 ]/g, "").trim().split(/\s+/).slice(0, 2).join(".");
+    const pass = () => ["mani","palta","limon","miel","menta","coco","nuez","kiwi"][Math.floor(Math.random()*8)] + (100 + Math.floor(Math.random()*900));
+
+    // Número argentino → formato de wa.me (549 + característica + número)
+    function waNumero(texto) {
+      let d = String(texto).replace(/\D/g, "");
+      d = d.replace(/^54/, "").replace(/^9/, "").replace(/^0/, "");
+      if (d.length === 12 && d.slice(2, 4) === "15") d = d.slice(0, 2) + d.slice(4);
+      return "549" + d;
+    }
+    function abrirWhatsApp(ventana, numero, texto) {
+      const url = `https://wa.me/${waNumero(numero)}?text=${encodeURIComponent(texto)}`;
+      if (ventana && !ventana.closed) ventana.location.href = url; else window.open(url, "_blank");
+    }
+
+    let toastT;
+    function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2600); }
+
+    async function api(url, body) {
+      const r = await fetch(url, body === undefined ? {cache: "no-store"} : {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
+      const j = await r.json().catch(() => ({}));
+      if (r.status === 401 && url.includes("clientes-admin") && !url.endsWith("/login")) { mostrarLogin(); throw new Error("Volvé a ingresar el PIN."); }
+      if (!r.ok) throw new Error(j.error || "Algo salió mal.");
+      return j;
+    }
+
+    function mostrarLogin() { $("#v-login").classList.remove("hidden"); $("#v-panel").classList.add("hidden"); }
+    function mostrarPanel() { $("#v-login").classList.add("hidden"); $("#v-panel").classList.remove("hidden"); }
+
+    $("#f-login").onsubmit = async (e) => {
+      e.preventDefault();
+      $("#login-err").classList.add("hidden");
+      try {
+        await api("/api/clientes-admin/login", {pin: $("#pin").value});
+        $("#pin").value = "";
+        await cargar();
+      } catch (err) { $("#login-err").textContent = err.message; $("#login-err").classList.remove("hidden"); }
+    };
+    $("#b-salir").onclick = async () => { await api("/api/clientes-admin/logout", {}).catch(() => {}); mostrarLogin(); };
+    $("#b-recargar").onclick = () => cargar();
+
+    async function cargar() {
+      $("#panel-err").classList.add("hidden");
+      try {
+        datos = await api("/api/clientes-admin/datos");
+        mostrarPanel();
+        render();
+      } catch (err) {
+        if (!$("#v-panel").classList.contains("hidden")) { $("#panel-err").textContent = err.message; $("#panel-err").classList.remove("hidden"); }
+      }
+    }
+
+    function render() { renderNuevos(); renderClientes($("#buscar").value); renderCumples(); }
+
+    /* ---------- Nuevos ---------- */
+    function renderNuevos() {
+      const n = datos.nuevos.length;
+      $("#pill").textContent = n; $("#pill").classList.toggle("hidden", !n);
+      if (!n) { $("#lista-nuevos").innerHTML = '<div class="empty">No hay registros nuevos. 🙌</div>'; return; }
+      $("#lista-nuevos").innerHTML = datos.nuevos.map((c, i) => {
+        c.user = c.user || slug(c.nombre); c.pass = c.pass || pass();
+        return `<div class="card nuevo">
+          <div class="row"><div><div class="name">${esc(c.nombre)}</div><div class="meta">📱 ${esc(c.whatsapp)} · ${esc(c.fecha)}</div></div><span class="badge">Nuevo</span></div>
+          <div class="creds">
+            <label class="f">Usuario<input id="u${i}" value="${esc(c.user)}" autocapitalize="none"></label>
+            <label class="f">Contraseña<input id="p${i}" value="${esc(c.pass)}" autocapitalize="none"></label>
+          </div>
+          <div class="err hidden" id="e${i}"></div>
+          <button class="btn wa" id="b${i}" onclick="darAlta(${i})">Dar de alta y enviar por WhatsApp</button>
+        </div>`;
+      }).join("");
+    }
+
+    window.darAlta = async (i) => {
+      const c = datos.nuevos[i];
+      c.user = $("#u" + i).value.trim().toLowerCase(); c.pass = $("#p" + i).value.trim();
+      const boton = $("#b" + i); boton.disabled = true; boton.textContent = "Guardando…";
+      $("#e" + i).classList.add("hidden");
+      const ventana = window.open("", "_blank"); // se abre ya para que el celular no la bloquee
+      try {
+        await api("/api/clientes-admin/accion", {tipo: "alta", fila: c.fila, usuario: c.user, password: c.pass});
+        abrirWhatsApp(ventana, c.whatsapp,
+`¡Hola ${c.nombre.split(" ")[0]}! Ya tenés tu cuenta AIBEH.
+
+Usuario: ${c.user}
+Contraseña: ${c.pass}
+
+Entrá en ${WEB} y tocá el botón de arriba a la derecha. Desde tu Perfil podés cambiar la contraseña cuando quieras.
+
+¡Ya tenés 10 fueguitos de bienvenida!`);
+        toast(`Listo: ${c.user} dado de alta con 10 🔥`);
+        await cargar();
+      } catch (err) {
+        if (ventana) ventana.close();
+        boton.disabled = false; boton.textContent = "Dar de alta y enviar por WhatsApp";
+        $("#e" + i).textContent = err.message; $("#e" + i).classList.remove("hidden");
+      }
+    };
+
+    /* ---------- Clientes ---------- */
+    function renderClientes(q = "") {
+      q = q.toLowerCase();
+      const lista = datos.clientes.map((c, i) => [c, i]).filter(([c]) => !q || (c.nombre + c.usuario + c.whatsapp).toLowerCase().includes(q));
+      if (!lista.length) { $("#lista-clientes").innerHTML = `<div class="empty">${datos.clientes.length ? "No hay coincidencias." : "Todavía no hay clientes con cuenta."}</div>`; return; }
+      $("#lista-clientes").innerHTML = lista.map(([c, i]) => `
+        <div class="card cl ${abierto === c.fila ? "open" : ""}" onclick="toggle(event, ${c.fila})">
+          <div class="row">
+            <div><div class="name">${esc(c.nombre)}</div><div class="meta">@${esc(c.usuario)} · 📱 ${esc(c.whatsapp)}${c.cumple ? ` · 🎂 ${c.cumple.dia} de ${MESES[c.cumple.mes - 1]}` : ""}</div></div>
+            <div style="text-align:right"><div class="fire" style="font-size:20px">🔥 ${c.fueguitos}</div>${c.racha ? `<span class="badge">racha ${c.racha} sem.</span>` : ""}</div>
+          </div>
+          <div class="detail">
+            <div class="meta">Sumar fueguitos</div>
+            <div class="chips">
+              <button class="btn ghost sm" onclick="sumar(${i},5,'Historia en Instagram')">+5 Historia IG</button>
+              <button class="btn ghost sm" onclick="sumar(${i},15,'Trajo un amigo')">+15 Trajo un amigo</button>
+              <button class="btn ghost sm" onclick="sumar(${i},10,'Regalo de cumpleaños')">+10 Cumpleaños</button>
+              <button class="btn ghost sm" onclick="sumarOtro(${i})">Otro…</button>
+            </div>
+            <div class="meta">Descontar por canje</div>
+            <div class="chips">
+              <button class="btn ghost sm" onclick="sumar(${i},-15,'Canje: 1 pancake')">−15 Pancake</button>
+              <button class="btn ghost sm" onclick="sumar(${i},-30,'Canje: 1 vianda + 2 pancakes')">−30</button>
+              <button class="btn ghost sm" onclick="sumar(${i},-60,'Canje: 2 viandas + 1 pan AIBEH')">−60</button>
+              <button class="btn ghost sm" onclick="sumar(${i},-100,'Canje: 4 viandas')">−100</button>
+            </div>
+            <button class="btn dark sm" onclick="nuevaPass(${i})">🔑 Nueva contraseña y enviar por WhatsApp</button>
+          </div>
+        </div>`).join("");
+    }
+    window.toggle = (e, fila) => { if (e.target.closest("button")) return; abierto = abierto === fila ? null : fila; renderClientes($("#buscar").value); };
+    $("#buscar").oninput = (e) => renderClientes(e.target.value);
+
+    window.sumar = async (i, cantidad, motivo) => {
+      const c = datos.clientes[i];
+      if (cantidad < 0 && !confirm(`¿Descontar ${-cantidad} fueguitos a ${c.nombre}? (${motivo})`)) return;
+      try {
+        await api("/api/clientes-admin/accion", {tipo: "sumar", fila: c.fila, cantidad, motivo});
+        toast(`${cantidad > 0 ? "+" : ""}${cantidad} 🔥 · ${c.nombre}`);
+        await cargar();
+      } catch (err) { toast(err.message); }
+    };
+    window.sumarOtro = (i) => {
+      const n = Number(prompt("¿Cuántos fueguitos? (usá un número negativo para descontar)"));
+      if (!n) return;
+      const motivo = prompt("Motivo (se ve en su historial)", "Ajuste") || "Ajuste";
+      sumar(i, Math.round(n), motivo);
+    };
+    window.nuevaPass = async (i) => {
+      const c = datos.clientes[i];
+      const nueva = prompt(`Nueva contraseña para ${c.nombre}:`, pass());
+      if (!nueva) return;
+      const ventana = window.open("", "_blank");
+      try {
+        await api("/api/clientes-admin/accion", {tipo: "password", fila: c.fila, password: nueva.trim()});
+        abrirWhatsApp(ventana, c.whatsapp, `¡Hola ${c.nombre.split(" ")[0]}! Te pasamos tu nueva contraseña de AIBEH.\n\nUsuario: ${c.usuario}\nContraseña: ${nueva.trim()}\n\nDespués la podés cambiar desde tu Perfil.`);
+        toast("Contraseña cambiada");
+      } catch (err) { if (ventana) ventana.close(); toast(err.message); }
+    };
+
+    /* ---------- Cumpleaños ---------- */
+    function renderCumples() {
+      const lista = datos.cumples || [];
+      $("#cumples").classList.toggle("hidden", !lista.length);
+      $("#lista-cumples").innerHTML = lista.map((c) => {
+        const i = datos.clientes.findIndex((x) => x.fila === c.fila);
+        const cuando = c.dias === 0 ? "¡HOY!" : c.dias === 1 ? "mañana" : `en ${c.dias} días`;
+        return `<div class="cu">
+          <div><div class="name" style="font-size:15px">${esc(c.nombre)}</div><span class="when">${cuando} · ${c.dia} de ${MESES[c.mes - 1]}</span></div>
+          <div class="acts">
+            <button class="btn dark sm" onclick="sumar(${i},10,'Regalo de cumpleaños')">+10 🔥</button>
+            <button class="btn wa sm" style="width:auto" onclick="saludar(${i})">Saludar</button>
+          </div>
+        </div>`;
+      }).join("");
+    }
+    window.saludar = (i) => {
+      const c = datos.clientes[i];
+      abrirWhatsApp(null, c.whatsapp, `¡Feliz cumple, ${c.nombre.split(" ")[0]}!\n\nDe parte de todo el equipo de AIBEH te regalamos 10 fueguitos. Ya los tenés en tu panel.\n\n¡Que tengas un día hermoso!`);
+    };
+
+    document.querySelectorAll(".tab").forEach((b) => b.onclick = () => {
+      document.querySelectorAll(".tab").forEach((x) => x.classList.toggle("on", x === b));
+      ["nuevos", "clientes"].forEach((t) => $("#t-" + t).classList.toggle("hidden", t !== b.dataset.t));
+    });
+
+    cargar();
+  </script>
+</body>
+</html>

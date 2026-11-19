@@ -4,6 +4,7 @@ import type {CartItem} from "../types";
 import type {ComponentProps} from "react";
 
 import {useState, useMemo} from "react";
+import Image from "next/image";
 import {X} from "lucide-react";
 
 import {parseCurrency} from "~/currency/utils";
@@ -182,9 +183,17 @@ function CartItemDrawer({
 
   return (
     <Sheet open={props.open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <SheetContent className="grid grid-rows-[auto_1fr_auto]">
+      <SheetContent className="isolate grid grid-rows-[auto_1fr_auto] overflow-hidden bg-[#f0ead3]">
+        {/* Beige de la marca con los dibujitos muy suaves, igual que en la web */}
+        <Image
+          fill
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none -z-10 select-none object-cover opacity-[0.04] mix-blend-multiply"
+          src="/assets/order-bg-deco.webp"
+        />
         <SheetHeader>
-          <SheetClose className="z-20 -mx-6 ml-auto h-12 w-14 rounded-l-lg border border-border bg-background py-2 pl-2 pr-4 shadow-lg">
+          <SheetClose className="z-20 -mx-6 ml-auto h-12 w-14 rounded-l-lg border border-border bg-[#f0ead3] py-2 pl-2 pr-4 shadow-lg">
             <X className="h-8 w-8" />
           </SheetClose>
         </SheetHeader>

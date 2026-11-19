@@ -2,6 +2,8 @@ import type {Store} from "~/store/types";
 
 import Image from "next/image";
 
+import {FondoDibujos} from "./fondo-dibujos";
+
 const EVOLUTION = [
   {
     icon: "🍽️",
@@ -22,7 +24,8 @@ const EVOLUTION = [
 
 export function AboutAgus({store}: {store: Store}) {
   return (
-    <section className="border-t-2 border-foreground/20 py-16">
+    <section className="relative isolate scroll-mt-4 py-16" id="nosotros">
+      <FondoDibujos />
       <div className="container mx-auto">
         <h2 className="mb-8 text-center font-heading text-4xl tracking-wide">Sobre Nosotros</h2>
         <div className="flex flex-col items-center gap-12 md:flex-row md:items-start">
@@ -68,7 +71,7 @@ export function AboutAgus({store}: {store: Store}) {
             </p>
           </div>
         </div>
-        <div className="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-8 rounded-xl bg-secondary px-8 py-6">
+        <div className="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-8 rounded-xl border border-white/60 bg-white/45 px-8 py-6">
           {EVOLUTION.map((item) => (
             <div key={item.label} className="min-w-[140px] flex-1 text-center">
               <div className="mb-2 text-2xl">{item.icon}</div>

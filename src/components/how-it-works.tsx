@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import {WeeklyMenuPopup} from "./weekly-menu-popup";
 
 const STEPS = [
@@ -31,8 +33,18 @@ export function HowItWorks({
   isStoreOpen: boolean;
 }) {
   return (
-    <section className="py-12">
-      <div className="container mx-auto text-center">
+    <section
+      className="relative ml-[calc(50%-50vw)] w-screen scroll-mt-4 overflow-hidden bg-[#f0ead3] py-12"
+      id="como-funciona"
+    >
+      <Image
+        fill
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none select-none object-cover opacity-[0.06] mix-blend-multiply [-webkit-mask-image:linear-gradient(to_bottom,transparent,black_260px)] [mask-image:linear-gradient(to_bottom,transparent,black_260px)]"
+        src="/assets/order-bg-deco.webp"
+      />
+      <div className="container relative mx-auto text-center">
         <h2 className="mb-8 font-heading text-4xl tracking-wide text-foreground">
           ¿Cómo funciona AIBEH?
         </h2>
@@ -54,7 +66,7 @@ export function HowItWorks({
 
         <div className="mx-auto mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {STEPS.map((step) => (
-            <div key={step.title} className="rounded-lg bg-secondary p-3 text-center sm:p-6">
+            <div key={step.title} className="rounded-lg border border-white/60 bg-white/50 p-3 text-center shadow-sm sm:p-6">
               <span className="mb-1 block text-xl sm:mb-2 sm:text-2xl">{step.emoji}</span>
               <h3 className="mb-1 text-xs font-semibold leading-snug sm:text-sm">{step.title}</h3>
               <p className="text-xs text-muted-foreground sm:text-sm">{step.description}</p>
