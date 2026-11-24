@@ -2,7 +2,7 @@
 
 import type {Store} from "~/store/types";
 
-import type {Cart, CartItem, Checkout, Coupon, Field} from "../types";
+import type {Cart, CartItem, Checkout, Coupon, Field, FuegosCoupon, FuegosGift} from "../types";
 import type {ShippingZone} from "../shipping";
 
 import {useState, useMemo, useCallback, useContext, createContext, useEffect} from "react";
@@ -12,7 +12,7 @@ import {parseCurrency} from "~/currency/utils";
 import {Button} from "@/components/ui/button";
 
 import CartDrawer from "../components/CartDrawer";
-import {getCartMessage, getCartTotal, getPackSize} from "../utils";
+import {getCartMessage, getCartTotal, getFuegosDiscount, getPackSize} from "../utils";
 
 interface Context {
   state: {
@@ -27,6 +27,9 @@ interface Context {
     isStoreOpen: boolean;
     appliedCoupon: Coupon | null;
     couponError: string | null;
+    couponLoading: boolean;
+    fuegos: FuegosGift | null;
+    weeklyMenu: string[];
   };
   actions: {
     addItem: (id: string, value: CartItem) => void;
@@ -36,6 +39,7 @@ interface Context {
     updateShipping: (zone: ShippingZone | null) => void;
     openCart: () => void;
     applyCoupon: (code: string) => void;
+    setGiftVianda: (nombre: string, cantidad: number) => void;
   };
 }
 
@@ -46,11 +50,13 @@ function CartProviderClient({
   children,
   store,
   coupons,
+  weeklyMenu = [],
 }: {
   fields: Field[];
   children: React.ReactNode;
   store: Store;
   coupons: Coupon[];
+  weeklyMenu?: string[];
 }) {
   const [checkout, setCheckout] = useState<Checkout>(() => new Map());
   const [cart, setCart] = useState<Cart>(() => new Map());
@@ -58,10 +64,12 @@ function CartProviderClient({
   const [shipping, setShipping] = useState<ShippingZone | null>(null);
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [fuegos, setFuegos] = useState<FuegosGift | null>(null);
   const subtotal = useMemo(() => parseCurrency(getCartTotal(cart)), [cart]);
   const totalAmount = useMemo(
-    () => getCartTotal(cart) + (shipping?.price || 0),
-    [cart, shipping],
+    () => Math.max(0, getCartTotal(cart) + (shipping?.price || 0) - getFuegosDiscount(fuegos)),
+    [cart, shipping, fuegos],
   );
   const total = useMemo(() => parseCurrency(totalAmount), [totalAmount]);
   const quantity = useMemo(
@@ -69,8 +77,8 @@ function CartProviderClient({
     [cart],
   );
   const message = useMemo(
-    () => getCartMessage(cart, checkout, shipping, appliedCoupon),
-    [cart, checkout, shipping, appliedCoupon],
+    () => getCartMessage(cart, checkout, shipping, appliedCoupon, fuegos),
+    [cart, checkout, shipping, appliedCoupon, fuegos],
   );
   const isStoreOpen = store.open !== "FALSE";
 
@@ -79,6 +87,7 @@ function CartProviderClient({
       setShipping(null);
       setAppliedCoupon(null);
       setCouponError(null);
+      setFuegos(null);
     }
   }, [cart.size]);
 
@@ -130,8 +139,10 @@ function CartProviderClient({
   }, []);
 
   const applyCoupon = useCallback(
-    (code: string) => {
+    async (code: string) => {
       const trimmed = code.trim();
+
+      setFuegos(null);
 
       if (!trimmed) {
         setAppliedCoupon(null);
@@ -146,7 +157,34 @@ function CartProviderClient({
 
       if (!match) {
         setAppliedCoupon(null);
-        setCouponError("Cupón inválido o vencido");
+
+        // ¿Es un cupón de fueguitos? Lo validamos con la planilla (único y de un solo uso).
+        setCouponLoading(true);
+        try {
+          const response = await fetch("/api/cupones/validar", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({codigo: trimmed}),
+          });
+          const data = (await response.json().catch(() => ({}))) as {cupon?: FuegosCoupon; error?: string};
+
+          if (!response.ok || !data.cupon) {
+            setCouponError(data.error || "Cupón inválido o vencido");
+
+            return;
+          }
+          if (data.cupon.viandas && getPackSize(cart) === null) {
+            setCouponError("Agregá un pack de viandas para usar este cupón");
+
+            return;
+          }
+          setFuegos({cupon: data.cupon, viandas: {}});
+          setCouponError(null);
+        } catch {
+          setCouponError("No pudimos revisar el cupón. Probá de nuevo.");
+        } finally {
+          setCouponLoading(false);
+        }
 
         return;
       }
@@ -164,6 +202,18 @@ function CartProviderClient({
     [coupons, cart],
   );
 
+  const setGiftVianda = useCallback((nombre: string, cantidad: number) => {
+    setFuegos((actual) => {
+      if (!actual) return actual;
+      const viandas = {...actual.viandas, [nombre]: Math.max(0, cantidad)};
+      const elegidas = Object.values(viandas).reduce((total, qty) => total + qty, 0);
+
+      if (elegidas > actual.cupon.viandas) return actual;
+
+      return {...actual, viandas};
+    });
+  }, []);
+
   const state = useMemo(
     () => ({
       checkout,
@@ -177,8 +227,14 @@ function CartProviderClient({
       isStoreOpen,
       appliedCoupon,
       couponError,
+      couponLoading,
+      fuegos,
+      weeklyMenu,
     }),
     [
+      couponLoading,
+      fuegos,
+      weeklyMenu,
       checkout,
       cart,
       subtotal,
@@ -201,8 +257,9 @@ function CartProviderClient({
       updateShipping,
       openCart,
       applyCoupon,
+      setGiftVianda,
     }),
-    [removeItem, updateItem, addItem, updateField, updateShipping, openCart, applyCoupon],
+    [removeItem, updateItem, addItem, updateField, updateShipping, openCart, applyCoupon, setGiftVianda],
   );
 
   return (

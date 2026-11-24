@@ -3,7 +3,7 @@
 import type {Product} from "~/product/types";
 
 import {useMemo, useState} from "react";
-import {SearchIcon, X, Table, StretchHorizontal, ChevronDown} from "lucide-react";
+import {ChevronDown} from "lucide-react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 
@@ -11,15 +11,13 @@ import {useCart} from "~/cart/context/client";
 import ProductCard from "~/product/components/ProductCard";
 
 import {cn} from "@/lib/utils";
-import {Input} from "@/components/ui/input";
-import {Toggle} from "@/components/ui/toggle";
 import CartItemDrawer from "@/modules/cart/components/CartItemDrawer";
 
 function StoreScreen({products, selected}: {products: Product[]; selected: null | Product}) {
   const [{isStoreOpen}, {addItem, openCart}] = useCart();
   const router = useRouter();
-  const [query, setQuery] = useState<string>("");
-  const [layout, setLayout] = useState<"list" | "grid">(() =>
+  const query: string = "";
+  const [layout] = useState<"list" | "grid">(() =>
     products.length > 30 ? "list" : "grid",
   );
   const [selectedCategory, setSelectedCategory] = useState<Product["category"] | null>(null);
@@ -72,52 +70,8 @@ function StoreScreen({products, selected}: {products: Product[]; selected: null 
   return (
     <>
       <div className="flex flex-col">
-        {/* Filters */}
-        <div className="z-10 flex items-center justify-between gap-4 py-4" id="filters">
-          <div className="relative flex w-full items-center sm:max-w-xs">
-            <SearchIcon className="absolute left-3 h-4 w-4 opacity-40" />
-            <Input
-              className="border-white/60 bg-white/50 px-9"
-              placeholder="Buscar..."
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
-              }}
-            />
-            {Boolean(query) && (
-              <X
-                className="absolute right-3 h-4 w-4 cursor-pointer opacity-40"
-                onClick={() => {
-                  setQuery("");
-                }}
-              />
-            )}
-          </div>
-          <div className="flex gap-2">
-            <Toggle
-              aria-label="Vista de lista"
-              pressed={layout === "list"}
-              onClick={() => {
-                setLayout("list");
-              }}
-            >
-              <div className="text-2xl">
-                <StretchHorizontal className="h-6 w-6 cursor-pointer opacity-40" />
-              </div>
-            </Toggle>
-            <Toggle
-              aria-label="Vista de grilla"
-              pressed={layout === "grid"}
-              onClick={() => {
-                setLayout("grid");
-              }}
-            >
-              <div className="text-2xl">
-                <Table className="h-6 w-6 cursor-pointer opacity-40" />
-              </div>
-            </Toggle>
-          </div>
-        </div>
+        {/* Sin buscador ni botones de vista (no hacían falta). Se deja el ancla para el scroll. */}
+        <div className="pt-2" id="filters" />
         {/* Grid of products by category */}
         <div className="flex flex-col">
           {categories.length ? (

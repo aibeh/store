@@ -2,7 +2,7 @@
 module.exports = {
   reactStrictMode: true,
   // Solo en desarrollo: permite abrir la web local desde el celular por wifi.
-  allowedDevOrigins: ["192.168.0.177"],
+  allowedDevOrigins: ["192.168.0.177", "192.168.0.233"],
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -35,7 +35,7 @@ module.exports = {
   async headers() {
     return [
       {
-        source: "/(cocina|cocina.html|api/cocina/:path*|clientes|clientes.html|api/cuenta/:path*|api/clientes-admin/:path*)",
+        source: "/(cocina|cocina.html|api/cocina/:path*|clientes|clientes.html|api/cuenta/:path*|api/clientes-admin/:path*|api/cupones/:path*)",
         headers: [
           {key: "X-Robots-Tag", value: "noindex, nofollow"},
           {key: "Cache-Control", value: "no-store"},

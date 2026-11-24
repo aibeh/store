@@ -1,4 +1,4 @@
-import type { Cart, CartItem, Checkout, Coupon } from "./types";
+import type { Cart, CartItem, Checkout, Coupon, FuegosGift } from "./types";
 import type { ShippingZone } from "./shipping";
 
 import { parseCurrency } from "~/currency/utils";
@@ -144,6 +144,51 @@ export function getCartItemOptionsSummary(
   return [inlineOptions.join("\n"), ...sections].filter(Boolean).join("\n\n");
 }
 
+// ── Cupón de fueguitos ───────────────────────────────────────
+export function getFuegosDiscount(gift: FuegosGift | null): number {
+  return gift?.cupon.tipo === "plata" ? gift.cupon.descuento : 0;
+}
+
+export function getFuegosChosenViandas(gift: FuegosGift | null): number {
+  return gift ? Object.values(gift.viandas).reduce((total, qty) => total + qty, 0) : 0;
+}
+
+// Texto del regalo con las viandas elegidas, ej: "1 vianda (Tarta de pollo) + 2 pancakes".
+export function getFuegosGiftText(gift: FuegosGift): string {
+  const {cupon} = gift;
+
+  if (cupon.tipo === "plata") return `${parseCurrency(cupon.descuento)} OFF`;
+
+  const partes: string[] = [];
+  const elegidas = Object.entries(gift.viandas).filter(([, qty]) => qty > 0);
+
+  if (cupon.viandas) {
+    const detalle = elegidas.map(([nombre, qty]) => `${qty > 1 ? `${qty}x ` : ""}${nombre}`).join(", ");
+
+    partes.push(`${cupon.viandas} ${cupon.viandas === 1 ? "vianda" : "viandas"}${detalle ? ` (${detalle})` : ""}`);
+  }
+  if (cupon.pancakes) partes.push(`${cupon.pancakes} pancakes`);
+  if (cupon.pan) partes.push(`${cupon.pan} pan AIBEH`);
+
+  return partes.join(" + ");
+}
+
+// Bloque del cupón en el mensaje de WhatsApp, en forma de lista (como las viandas del pack).
+export function getFuegosMessage(gift: FuegosGift): string {
+  const {cupon} = gift;
+
+  if (cupon.tipo === "plata") return `🔥 Cupón de fueguitos ${cupon.codigo}: ${parseCurrency(cupon.descuento)} OFF`;
+
+  const lineas = Object.entries(gift.viandas)
+    .filter(([, qty]) => qty > 0)
+    .map(([nombre, qty]) => `  • ${nombre} (x${qty})`);
+
+  if (cupon.pancakes) lineas.push(`  • Pancakes de harina de almendras (x${cupon.pancakes})`);
+  if (cupon.pan) lineas.push(`  • Pan integral con semillas (x${cupon.pan})`);
+
+  return [`🔥 Cupón de fueguitos ${cupon.codigo} (${cupon.premio} de regalo):`, ...lineas].join("\n");
+}
+
 export interface OrderPayload {
   cliente: string | null;
   items: {
@@ -170,6 +215,7 @@ export function getOrderPayload(
   checkout: Checkout,
   shipping: ShippingZone | null,
   coupon: Coupon | null,
+  fuegos: FuegosGift | null = null,
 ): OrderPayload {
   const items = Array.from(cart.values()).map((item) => {
     const viandas: {nombre: string; cantidad: number}[] = [];
@@ -210,8 +256,49 @@ export function getOrderPayload(
 
   const subtotal = getCartTotal(cart);
   const costoEnvio = shipping?.price || 0;
-  const total = subtotal + costoEnvio;
+  const descuento = getFuegosDiscount(fuegos);
+  const total = Math.max(0, subtotal + costoEnvio - descuento);
   const isCashPayment = Boolean(metodoPago && metodoPago.toLowerCase().includes("efectivo"));
+
+  // Regalos del cupón de fueguitos: se suman como productos para que el script de pedidos
+  // los cuente en "Pedidos" (viandas en la columna del pack, pancakes y pan en su fila) y
+  // en el Libro Diario aparezcan como "... DE REGALO". El precio no cambia.
+  if (fuegos && fuegos.cupon.tipo === "regalo") {
+    const {cupon} = fuegos;
+    const pack = items.find((item) => /pack de \d+\s*viandas/i.test(item.producto));
+
+    if (pack && cupon.viandas) {
+      Object.entries(fuegos.viandas).forEach(([nombre, qty]) => {
+        if (!qty) return;
+        const existente = pack.viandas.find((v) => v.nombre === nombre);
+
+        if (existente) existente.cantidad += qty;
+        else pack.viandas.push({nombre, cantidad: qty});
+      });
+      items.push({
+        producto: cupon.viandas === 1 ? "Vianda de regalo" : "Viandas de regalo",
+        cantidad: cupon.viandas,
+        precio: 0,
+        viandas: [],
+        otrasElecciones: {},
+      });
+    }
+
+    const sumarRegalo = (patron: RegExp, nombreBase: string, cantidad: number) => {
+      if (!cantidad) return;
+      const comprado = items.find((item) => patron.test(item.producto));
+
+      if (comprado) {
+        comprado.producto = `${comprado.producto.replace(/[¡!]/g, "").trim()} (+${cantidad} de regalo)`;
+        comprado.cantidad += cantidad;
+      } else {
+        items.push({producto: `${nombreBase} de regalo`, cantidad, precio: 0, viandas: [], otrasElecciones: {}});
+      }
+    };
+
+    sumarRegalo(/pancakes/i, "Pancakes de harina de almendras", cupon.pancakes);
+    sumarRegalo(/pan integral/i, "Pan integral con semillas", cupon.pan);
+  }
 
   return {
     cliente,
@@ -222,8 +309,15 @@ export function getOrderPayload(
     subtotal,
     costoEnvio,
     total,
-    totalConDescuentoEfectivo: isCashPayment ? getCashTotal(cart, costoEnvio) : null,
-    cupon: coupon
+    totalConDescuentoEfectivo: isCashPayment ? Math.max(0, getCashTotal(cart, costoEnvio) - descuento) : null,
+    cupon: fuegos
+      ? {
+          // Observaciones en rojo: "1 CUPÓN AIBEH-PALTA-K7Q2: 1 VIANDA + 2 PANCAKES DE REGALO"
+          codigo: fuegos.cupon.codigo,
+          cantidadRegalo: 1,
+          regalo: `cupón ${fuegos.cupon.codigo}: ${fuegos.cupon.premio}`,
+        }
+      : coupon
       ? (() => {
           const cantidadRegalo = getCouponGiftQuantity(coupon, cart);
 
@@ -242,6 +336,7 @@ export function getCartMessage(
   checkout: Checkout,
   shipping: ShippingZone | null,
   coupon: Coupon | null,
+  fuegos: FuegosGift | null = null,
 ): string {
   const items = Array.from(cart.values())
     .map((item) => {
@@ -256,8 +351,9 @@ export function getCartMessage(
     .join("\n\n");
 
   const giftQuantity = coupon ? getCouponGiftQuantity(coupon, cart) : 0;
-  const couponLine =
-    coupon && giftQuantity
+  const couponLine = fuegos
+    ? getFuegosMessage(fuegos)
+    : coupon && giftQuantity
       ? `🎁 Cupón ${coupon.codigo}: +${giftQuantity} ${getCouponGiftLabel(coupon, giftQuantity)} de regalo`
       : "";
 
@@ -268,12 +364,13 @@ export function getCartMessage(
   const shippingLine = shipping ? `Zona de entrega:\n  • ${shipping.title}` : "";
 
   const subtotal = getCartTotal(cart);
-  const total = subtotal + (shipping?.price || 0);
+  const descuento = getFuegosDiscount(fuegos);
+  const total = Math.max(0, subtotal + (shipping?.price || 0) - descuento);
   const isCashPayment = Array.from(checkout.values()).some((value) =>
     value.toLowerCase().includes("efectivo"),
   );
   const finalTotal = isCashPayment
-    ? `Total con 10% OFF en efectivo: ${parseCurrency(getCashTotal(cart, shipping?.price || 0))}`
+    ? `Total con 10% OFF en efectivo: ${parseCurrency(Math.max(0, getCashTotal(cart, shipping?.price || 0) - descuento))}`
     : `Total: ${parseCurrency(total)}`;
   const separator = "------------------------------";
 

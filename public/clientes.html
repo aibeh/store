@@ -99,11 +99,17 @@
     <nav class="tabs">
       <button class="tab on" data-t="nuevos">Nuevos <span class="pill hidden" id="pill"></span></button>
       <button class="tab" data-t="clientes">Clientes</button>
+      <button class="tab" data-t="canjes">Canjes <span class="pill hidden" id="pill-canjes"></span></button>
     </nav>
 
     <section id="t-nuevos">
       <div class="aviso">Cada vez que alguien se registra te llega un mail y aparece acá. Revisá el usuario y la contraseña y tocá <b>Dar de alta y enviar por WhatsApp</b>: se guarda la cuenta, se le suman los 10 🔥 de bienvenida y se abre WhatsApp con el mensaje listo.</div>
       <div id="lista-nuevos"></div>
+    </section>
+
+    <section id="t-canjes" class="hidden">
+      <div class="aviso">Cada vez que un cliente canjea fueguitos recibe un cupón único. Cuando hace su pedido con ese cupón, el regalo te aparece solo en <b>Pedidos</b>, en el <b>Libro Diario</b> y en <b>Observaciones</b> (en rojo), y el cupón pasa a <b>Usado</b>.</div>
+      <div id="lista-canjes"></div>
     </section>
 
     <section id="t-clientes" class="hidden">
@@ -174,7 +180,28 @@
       }
     }
 
-    function render() { renderNuevos(); renderClientes($("#buscar").value); renderCumples(); }
+    function render() { renderNuevos(); renderClientes($("#buscar").value); renderCumples(); renderCanjes(); }
+
+    /* ---------- Canjes ---------- */
+    function renderCanjes() {
+      const lista = datos.canjes || [];
+      const sinUsar = lista.filter((c) => c.estado === "Sin usar").length;
+      $("#pill-canjes").textContent = sinUsar; $("#pill-canjes").classList.toggle("hidden", !sinUsar);
+      if (!lista.length) { $("#lista-canjes").innerHTML = '<div class="empty">Todavía no hubo canjes.</div>'; return; }
+      $("#lista-canjes").innerHTML = lista.map((c) => {
+        const usado = c.estado !== "Sin usar";
+        return `<div class="card" style="${usado ? "opacity:.7" : "border-left:4px solid var(--brand)"}">
+          <div class="row">
+            <div>
+              <div class="name" style="font-family:ui-monospace,monospace;font-size:15px">${esc(c.codigo)}</div>
+              <div class="meta">${esc(c.nombre)} (@${esc(c.usuario)}) · ${esc(c.premio)} · −${c.fueguitos} 🔥 · ${esc(c.fecha)}</div>
+              ${usado ? `<div class="meta">Usado el ${esc(c.fechaUso)}${c.pedidoDe ? " · pedido de " + esc(c.pedidoDe) : ""}</div>` : ""}
+            </div>
+            <span class="badge" style="${usado ? "background:#eafaf0;color:var(--wa)" : ""}">${usado ? "Usado" : "Sin usar"}</span>
+          </div>
+        </div>`;
+      }).join("");
+    }
 
     /* ---------- Nuevos ---------- */
     function renderNuevos() {
@@ -304,7 +331,7 @@ Entrá en ${WEB} y tocá el botón de arriba a la derecha. Desde tu Perfil podé
 
     document.querySelectorAll(".tab").forEach((b) => b.onclick = () => {
       document.querySelectorAll(".tab").forEach((x) => x.classList.toggle("on", x === b));
-      ["nuevos", "clientes"].forEach((t) => $("#t-" + t).classList.toggle("hidden", t !== b.dataset.t));
+      ["nuevos", "clientes", "canjes"].forEach((t) => $("#t-" + t).classList.toggle("hidden", t !== b.dataset.t));
     });
 
     cargar();

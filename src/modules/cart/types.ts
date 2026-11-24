@@ -38,6 +38,23 @@ export interface TextField {
 
 export type Field = RadioField | TextField;
 
+// Cupón de fueguitos (canje del panel del cliente): único y de un solo uso.
+export interface FuegosCoupon {
+  codigo: string;
+  premio: string;
+  tipo: "regalo" | "plata";
+  viandas: number;
+  pancakes: number;
+  pan: number;
+  descuento: number;
+}
+
+// Cupón de fueguitos aplicado + las viandas de regalo que eligió el cliente.
+export interface FuegosGift {
+  cupon: FuegosCoupon;
+  viandas: Record<string, number>;
+}
+
 export interface Coupon {
   codigo: string;
   pack5: number;
